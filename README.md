@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ECMS - Engineering & Construction Management System
+
+A modern, role-based web application tailored for the construction industry. Designed for control and engineered for efficiency, ECMS allows teams to track projects, manage construction planning, monitor budgets, handle site inventory, and streamline document management.
+
+## Features
+
+- **Role-Based Access Control:** Secure authentication powered by NextAuth.js (v5). Access and functionalities are dynamically scoped for Project Managers, Site Supervisors, and Storekeepers.
+- **Executive Dashboard:** Live KPI cards for active projects, budget tracking, completion rates, and recent notifications across the site.
+- **Project Management:** Project registry with detailed profile cards, contract data, and a milestone tracker for granular timelines.
+- **Planning & Progress:** High-level Gantt charts paired with S-Curve analysis. Allows site teams to submit daily progress reports directly.
+- **Cost Control:** Budget vs. Actual tracking down to specific cost codes (Substructure, Superstructure, Masonry, etc.) with automated warnings.
+- **Material & Warehouse:** Track site inventory in real-time and handle material requests with low-stock alerts.
+- **Document Management:** Centralized drawing register that enforces version control and locks superseded drawings automatically.
+
+## Tech Stack
+
+- **Framework:** [Next.js 14/15](https://nextjs.org/) (App Router)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/) with a fully custom dark-mode design system
+- **Authentication:** [NextAuth.js v5 Beta](https://authjs.dev/)
+- **Icons:** [Tabler Icons React](https://tabler.io/icons)
+- **Language:** TypeScript
 
 ## Getting Started
 
 First, run the development server:
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Demo Accounts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The application uses dummy data configured in `lib/data.ts`. You can log in using any of the following credentials without a database:
 
-## Learn More
+- **Project Manager:** `pm@ecms.app` / `demo1234`
+- **Site Supervisor:** `supervisor@ecms.app` / `demo1234`
+- **Storekeeper:** `store@ecms.app` / `demo1234`
 
-To learn more about Next.js, take a look at the following resources:
+## Project Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `/app`: Next.js App Router endpoints, including layout shell and pages.
+- `/components`: Reusable UI components (`Logo`, `StatusPill`, `ProgressBar`, etc.) and Layout elements (`Sidebar`, `Topbar`).
+- `/lib`: Helper functions and mock data (`data.ts`).
+- `/middleware.ts`: Secures routes globally and enforces role-based redirections.
