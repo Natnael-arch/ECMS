@@ -1,59 +1,14 @@
 'use client';
-import React from 'react';
+
 import { usePathname } from 'next/navigation';
-import { useSession, signOut } from 'next-auth/react';
+import { useSession, signOut } from '@/lib/auth-client';
 import { IconBell, IconLogout } from '@tabler/icons-react';
+import { getNavigationTrail } from '@/lib/navigation';
 
 export function Topbar() {
   const pathname = usePathname();
   const { data: session } = useSession();
-
-  // Extract page title from pathname
-  const getPageTitle = () => {
-    const titleMap: Record<string, string> = {
-      '/dashboard': 'Executive dashboard',
-      '/projects': 'Project management',
-      '/planning': 'Planning & progress',
-      '/cost': 'Cost control',
-      '/materials': 'Material & warehouse',
-      '/documents': 'Document management'
-    };
-    
-    const matchedPath = Object.keys(titleMap).find(key => pathname.startsWith(key));
-    if (matchedPath) return titleMap[matchedPath];
-    
-    const path = pathname.split('/')[1];
-    if (!path) return '';
-    return path.charAt(0).toUpperCase() + path.slice(1);
-  };
-
-  return (
-    <header className="h-[48px] bg-ecms-navy border-b border-ecms-border flex items-center justify-between px-6 sticky top-0 z-30">
-      <div className="flex items-center">
-        <h1 className="text-ecms-text text-[14px] font-medium">{getPageTitle()}</h1>
-      </div>
-      
-      <div className="flex items-center gap-4">
-        <button className="relative text-ecms-muted hover:text-ecms-text transition-colors">
-          <IconBell size={20} stroke={1.5} />
-          <span className="absolute top-0 right-0 w-2 h-2 bg-ecms-danger rounded-full border border-ecms-navy" />
-        </button>
-        
-        <div className="w-px h-5 bg-ecms-border" />
-        
-        <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-7 h-7 rounded-full bg-ecms-elevated text-ecms-amber text-xs font-bold shadow-sm border border-ecms-border-strong uppercase">
-            {session?.user?.name?.charAt(0) || 'U'}
-          </div>
-          <button 
-            onClick={() => signOut({ callbackUrl: '/login' })}
-            className="text-ecms-muted hover:text-ecms-text transition-colors"
-            title="Sign out"
-          >
-            <IconLogout size={18} stroke={1.5} />
-          </button>
-        </div>
-      </div>
-    </header>
-  );
+  const trail = getNavigationTrail(pathname);
+  const title = trail?.item.label ?? trail?.module.label ?? 'Engineering & Construction Management System';
+  return <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-ecms-border bg-ecms-navy px-6 pl-14 md:pl-6"><div className="min-w-0"><p className="hidden text-[10px] uppercase tracking-wider text-ecms-muted sm:block">{trail?.module.label ?? 'ECMS'}</p><h1 className="truncate text-sm font-medium text-ecms-text">{title}</h1></div><div className="flex items-center gap-4"><button className="relative text-ecms-muted hover:text-ecms-text" aria-label="Notifications"><IconBell size={20} stroke={1.5} /><span className="absolute right-0 top-0 h-2 w-2 rounded-full border border-ecms-navy bg-ecms-danger" /></button><div className="h-5 w-px bg-ecms-border" /><div className="flex items-center gap-3"><div className="flex h-7 w-7 items-center justify-center rounded-full border border-ecms-border-strong bg-ecms-elevated text-xs font-bold uppercase text-ecms-amber">{session?.user?.name?.charAt(0) || 'U'}</div><button onClick={() => signOut({ callbackUrl: '/login' })} className="text-ecms-muted hover:text-ecms-text" title="Sign out"><IconLogout size={18} stroke={1.5} /></button></div></div></header>;
 }

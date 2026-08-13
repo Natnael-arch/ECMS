@@ -1,110 +1,78 @@
 'use client';
-import React from 'react';
+
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-import { cn } from '@/lib/utils';
+import { useState } from 'react';
+import {
+  IconAlertTriangle,
+  IconBox,
+  IconBuilding,
+  IconCurrencyDollar,
+  IconFiles,
+  IconFileText,
+  IconFingerprint,
+  IconLayoutDashboard,
+  IconLicense,
+  IconListCheck,
+  IconMenu2,
+  IconPackages,
+  IconReport,
+  IconSettings,
+  IconUsers,
+  IconX,
+} from '@tabler/icons-react';
 import { Logo } from '@/components/ui/Logo';
-import { 
-  IconLayoutDashboard, 
-  IconBuilding, 
-  IconCalendarEvent, 
-  IconCurrencyDollar, 
-  IconBox, 
+import { cn } from '@/lib/utils';
+import { navigationModules } from '@/lib/navigation';
+
+const moduleIcons = [
+  IconLayoutDashboard,
+  IconBuilding,
+  IconLicense,
+  IconCurrencyDollar,
+  IconFingerprint,
+  IconListCheck,
+  IconBox,
+  IconPackages,
+  IconUsers,
+  IconFiles,
+  IconAlertTriangle,
+  IconReport,
   IconFileText,
   IconSettings,
-  IconUser
-} from '@tabler/icons-react';
-
-const ALL_NAV_ITEMS = [
-  { href: '/dashboard', icon: IconLayoutDashboard, label: 'Dashboard', roles: ['pm'] },
-  { href: '/projects', icon: IconBuilding, label: 'Projects', roles: ['pm'] },
-  { href: '/planning', icon: IconCalendarEvent, label: 'Planning', roles: ['pm', 'supervisor'] },
-  { href: '/cost', icon: IconCurrencyDollar, label: 'Cost', roles: ['pm'] },
-  { href: '/materials', icon: IconBox, label: 'Materials', roles: ['pm', 'supervisor', 'storekeeper'] },
-  { href: '/documents', icon: IconFileText, label: 'Documents', roles: ['pm'] },
 ];
 
-export function Sidebar() {
+function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
-  const { data: session } = useSession();
-  
-  const userRole = session?.user?.role as string || '';
+  return (
+    <nav className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto px-3 py-3" aria-label="Modules">
+      {navigationModules.map((module, index) => {
+        const Icon = moduleIcons[index];
+        const active = pathname === module.href || pathname.startsWith(`${module.href}/`);
+        return (
+          <Link key={module.href} href={module.href} onClick={onNavigate} className={cn('group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors', active ? 'bg-ecms-elevated text-ecms-amber' : 'text-ecms-muted hover:bg-ecms-elevated hover:text-ecms-text')}>
+            <Icon size={18} stroke={1.7} className={cn('shrink-0 transition-colors', active ? 'text-ecms-amber' : 'text-ecms-muted group-hover:text-ecms-text')} />
+            <span className="truncate">{module.label}</span>
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}
 
-  const navItems = ALL_NAV_ITEMS.filter(item => item.roles.includes(userRole));
-
+export function Sidebar() {
+  const [mobileOpen, setMobileOpen] = useState(false);
   return (
     <>
-      {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-[56px] h-screen bg-ecms-navy border-r border-ecms-border shrink-0 fixed top-0 left-0 z-40">
-        <div className="h-[48px] flex items-center justify-center border-b border-ecms-border mb-4">
-          <Link href="/dashboard" className="flex justify-center items-center scale-75 hover:opacity-80 transition-opacity">
-            <Logo variant="mark" />
-          </Link>
-        </div>
-        
-        <nav className="flex-1 flex flex-col items-center gap-4 py-2">
-          {navItems.map((item) => {
-            const isActive = pathname.startsWith(item.href);
-            return (
-              <Link 
-                key={item.href} 
-                href={item.href}
-                title={item.label}
-                className="relative w-full flex justify-center py-2 group"
-              >
-                {isActive && (
-                  <div className="absolute left-0 top-0 bottom-0 w-[2.5px] bg-ecms-amber rounded-r-sm" />
-                )}
-                <item.icon 
-                  size={24} 
-                  stroke={1.5}
-                  className={cn(
-                    "transition-colors",
-                    isActive ? "text-ecms-amber" : "text-ecms-muted group-hover:text-ecms-text"
-                  )} 
-                />
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div className="flex flex-col items-center gap-4 pb-4">
-          <div className="w-8 h-px bg-ecms-border" />
-          <button className="text-ecms-muted hover:text-ecms-text transition-colors" title="Settings">
-            <IconSettings size={24} stroke={1.5} />
-          </button>
-          <button className="text-ecms-muted hover:text-ecms-text transition-colors" title="Profile">
-            <IconUser size={24} stroke={1.5} />
-          </button>
-        </div>
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r border-ecms-border bg-ecms-navy md:flex">
+        <Link href="/dashboard" className="flex h-14 items-center gap-2.5 border-b border-ecms-border px-4" title="ECMS home">
+          <Logo variant="mark" />
+          <span className="text-sm font-bold text-ecms-text">ECMS</span>
+        </Link>
+        <SidebarNav />
       </aside>
-
-      {/* Mobile Bottom Nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-ecms-navy border-t border-ecms-border flex items-center justify-around z-40 pb-safe">
-        {navItems.map((item) => {
-          const isActive = pathname.startsWith(item.href);
-          return (
-            <Link 
-              key={item.href} 
-              href={item.href}
-              className="relative flex flex-col items-center justify-center w-full h-full p-2 group"
-            >
-              {isActive && (
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-[2.5px] bg-ecms-amber rounded-b-sm" />
-              )}
-              <item.icon 
-                size={22} 
-                stroke={1.5}
-                className={cn(
-                  "transition-colors",
-                  isActive ? "text-ecms-amber" : "text-ecms-muted group-hover:text-ecms-text"
-                )} 
-              />
-            </Link>
-          );
-        })}
-      </nav>
+      <button type="button" onClick={() => setMobileOpen(true)} className="fixed left-3 top-3 z-50 rounded-md border border-ecms-border bg-ecms-navy p-2 text-ecms-text md:hidden" aria-label="Open navigation"><IconMenu2 size={20} /></button>
+      {mobileOpen && <div className="fixed inset-0 z-50 bg-black/60 md:hidden" onClick={() => setMobileOpen(false)}><aside className="flex h-full w-72 max-w-[94vw] flex-col bg-ecms-navy" onClick={(event) => event.stopPropagation()}><div className="flex h-14 items-center justify-between border-b border-ecms-border px-4"><Link href="/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center gap-2.5"><Logo variant="mark" /><span className="text-sm font-bold text-ecms-text">ECMS</span></Link><button type="button" onClick={() => setMobileOpen(false)} className="rounded-md bg-ecms-elevated p-2 text-ecms-text" aria-label="Close navigation"><IconX size={18} /></button></div><SidebarNav onNavigate={() => setMobileOpen(false)} /></aside></div>}
     </>
   );
 }

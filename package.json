@@ -6,13 +6,21 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:migrate": "psql -h localhost -U postgres -d ecms -f drizzle/0000_mvp_schema.sql -f drizzle/0001_full_schema.sql -f drizzle/0002_seed.sql"
   },
   "dependencies": {
+    "@better-auth/prisma-adapter": "^1.6.27",
+    "@prisma/adapter-pg": "^7.9.1",
+    "@prisma/client": "^7.9.1",
     "@tabler/icons-react": "^3.45.0",
+    "bcryptjs": "^3.0.3",
+    "better-auth": "^1.6.27",
     "clsx": "^2.1.1",
+    "drizzle-orm": "^0.45.2",
     "next": "16.2.11",
     "next-auth": "^5.0.0-beta.32",
+    "pg": "^8.23.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "recharts": "^3.10.0",
@@ -20,12 +28,17 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
+    "@types/pg": "^8.21.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "drizzle-kit": "^0.31.10",
     "eslint": "^9",
     "eslint-config-next": "16.2.11",
+    "prisma": "^7.9.1",
     "tailwindcss": "^4",
+    "tsx": "^4.23.12",
     "typescript": "^5"
   }
 }

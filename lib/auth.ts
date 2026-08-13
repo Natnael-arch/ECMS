@@ -1,55 +1,62 @@
-import NextAuth, { NextAuthConfig } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
+import { betterAuth } from 'better-auth';
+import { prismaAdapter } from 'better-auth/adapters/prisma';
+import { nextCookies } from 'better-auth/next-js';
+import { db } from '@/lib/db';
 
-export const authConfig: NextAuthConfig = {
-  secret: 'my-super-secret-key-that-is-at-least-32-chars-long-for-next-auth',
-  providers: [
-    CredentialsProvider({
-      name: "Credentials",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
-      },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
-
-        const email = credentials.email as string;
-        const password = credentials.password as string;
-
-        if (password !== 'demo1234') return null;
-
-        if (email === 'pm@ecms.app') {
-          return { id: "1", name: "Project Manager", email, role: "pm" };
-        }
-        if (email === 'supervisor@ecms.app') {
-          return { id: "2", name: "Site Supervisor", email, role: "supervisor" };
-        }
-        if (email === 'store@ecms.app') {
-          return { id: "3", name: "Storekeeper", email, role: "storekeeper" };
-        }
-
-        return null;
-      }
-    })
-  ],
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.role = user.role;
-      }
-      return token;
+export const auth = betterAuth({
+  appName: 'ECMS',
+  secret: process.env.BETTER_AUTH_SECRET,
+  database: prismaAdapter(db, {
+    provider: 'postgresql',
+  }),
+  emailAndPassword: {
+    enabled: true,
+  },
+  user: {
+    fields: {
+      emailVerified: 'email_verified',
+      image: 'image',
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
     },
-    async session({ session, token }) {
-      if (token && session.user) {
-        session.user.role = token.role as string;
-      }
-      return session;
-    }
   },
-  pages: {
-    signIn: "/login",
+  session: {
+    fields: {
+      userId: 'user_id',
+      token: 'token',
+      expiresAt: 'expires_at',
+      ipAddress: 'ip_address',
+      userAgent: 'user_agent',
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+    },
   },
-  session: { strategy: "jwt" }
-};
+  account: {
+    fields: {
+      userId: 'user_id',
+      accountId: 'account_id',
+      providerId: 'provider_id',
+      accessToken: 'access_token',
+      refreshToken: 'refresh_token',
+      accessTokenExpiresAt: 'access_token_expires_at',
+      refreshTokenExpiresAt: 'refresh_token_expires_at',
+      scope: 'scope',
+      idToken: 'id_token',
+      password: 'password',
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+    },
+  },
+  verification: {
+    fields: {
+      identifier: 'identifier',
+      value: 'value',
+      expiresAt: 'expires_at',
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+    },
+  },
+  plugins: [nextCookies()],
+});
 
-export const { handlers, auth, signIn, signOut } = NextAuth(authConfig);
+export type Session = typeof auth.$Infer.Session;

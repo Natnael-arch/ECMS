@@ -1,147 +1,102 @@
-'use client';
-import React, { useState } from 'react';
-import { projects } from '@/lib/data';
+import Link from 'next/link';
+import { Card } from '@/components/ui/Card';
+import { Table, THead, TH, TBody, TR, TD } from '@/components/ui/Table';
 import { StatusPill } from '@/components/ui/StatusPill';
-import { IconChevronRight, IconBuildingFactory, IconCalendarStats, IconUsers } from '@tabler/icons-react';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { SectionHeader } from '@/components/ui/SectionHeader';
+import { Badge } from '@/components/ui/Badge';
+import { IconBuilding, IconPlus } from '@tabler/icons-react';
+import { db } from '@/lib/db';
+import { requireAppUser } from '@/lib/server/session';
+import { getProjectContext } from '@/lib/server/context';
+import { money, date, num } from '@/lib/format';
 
-export default function ProjectsPage() {
-  const [selectedProjectId, setSelectedProjectId] = useState(projects[0].id);
-  const selectedProject = projects.find(p => p.id === selectedProjectId) || projects[0];
+export const dynamic = 'force-dynamic';
 
-  const milestones = [
-    { label: "Foundation complete",      status: "done",        date: null },
-    { label: "Superstructure to 6F",     status: "done",        date: null },
-    { label: "Superstructure to 12F",    status: "in-progress", date: "Oct 2026" },
-    { label: "MEP rough-in",             status: "upcoming",    date: "Nov 2026" },
-    { label: "Finishing and handover",   status: "upcoming",    date: "Dec 2026" },
-  ];
+export default async function ProjectsPage() {
+  const ctx = await requireAppUser();
+  const { tenantId } = await getProjectContext();
+
+  const [projects, contracts] = await Promise.all([
+    db.projects.findMany({ where: { tenant_id: tenantId }, orderBy: { created_at: 'asc' }, include: { _count: { select: { contracts: true, measurements: true, ipc_certificates: true } } } }),
+    db.contracts.findMany({ where: { project: { tenant_id: tenantId } }, orderBy: { revised_contract_amount: 'desc' }, take: 5, include: { projects: { select: { project_code: true, name: true } } } }),
+  ]);
+
+  const contractTotals = new Map<string, number>();
+  for (const c of contracts) contractTotals.set(c.project_id, (contractTotals.get(c.project_id) ?? 0) + Number(c.revised_contract_amount));
+
+  const statuses = ['draft', 'active', 'suspended', 'completed', 'archived'] as const;
 
   return (
-    <div className="flex flex-col gap-6 max-w-7xl mx-auto h-full">
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        
-        {/* Project Register Table */}
-        <div className="xl:col-span-2 bg-ecms-card border border-ecms-border rounded-xl flex flex-col overflow-hidden">
-          <div className="p-5 border-b border-ecms-border">
-            <h2 className="text-base font-semibold text-ecms-text">Project Register</h2>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-ecms-text">
-              <thead className="bg-ecms-elevated/50 text-ecms-muted text-xs uppercase">
-                <tr>
-                  <th className="px-5 py-3 font-medium">Project Name</th>
-                  <th className="px-5 py-3 font-medium">Client</th>
-                  <th className="px-5 py-3 font-medium">Value (ETB)</th>
-                  <th className="px-5 py-3 font-medium">Timeline</th>
-                  <th className="px-5 py-3 font-medium">Status</th>
-                  <th className="px-5 py-3 font-medium"></th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-ecms-border">
-                {projects.map(p => (
-                  <tr 
-                    key={p.id} 
-                    className={`hover:bg-ecms-elevated/30 transition-colors cursor-pointer ${selectedProjectId === p.id ? 'bg-ecms-elevated/20' : ''}`}
-                    onClick={() => setSelectedProjectId(p.id)}
-                  >
-                    <td className="px-5 py-4 font-medium">{p.name}</td>
-                    <td className="px-5 py-4 text-ecms-muted">{p.client}</td>
-                    <td className="px-5 py-4">{(p.contractValue / 1000000).toFixed(1)}M</td>
-                    <td className="px-5 py-4 text-ecms-muted">{p.startDate} - {p.endDate}</td>
-                    <td className="px-5 py-4">
-                      <StatusPill status={p.status} />
-                    </td>
-                    <td className="px-5 py-4 text-right">
-                      <button className="text-ecms-amber hover:text-white transition-colors">
-                        <IconChevronRight size={20} />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+    <div className="flex flex-col gap-5">
+      <SectionHeader
+        title="Project Register"
+        actions={
+          <form method="POST" action="/api/v1/projects" className="flex flex-wrap items-center gap-2">
+            <input name="project_code" placeholder="Code (e.g. HW-001)" required className="rounded-lg border border-ecms-border bg-ecms-card px-3 py-1.5 text-sm text-ecms-text placeholder:text-ecms-muted" />
+            <input name="name" placeholder="Project name" required className="rounded-lg border border-ecms-border bg-ecms-card px-3 py-1.5 text-sm text-ecms-text placeholder:text-ecms-muted" />
+            <select name="status" className="rounded-lg border border-ecms-border bg-ecms-card px-3 py-1.5 text-sm text-ecms-text">
+              {statuses.map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+            <button type="submit" className="inline-flex items-center gap-1.5 rounded-lg bg-ecms-amber px-3 py-1.5 text-sm font-semibold text-ecms-navy hover:bg-ecms-amber/90">
+              <IconPlus size={16} /> New Project
+            </button>
+          </form>
+        }
+      />
 
-        {/* Project Detail Panel */}
-        <div className="flex flex-col gap-6">
-          {/* Profile Card */}
-          <div className="bg-ecms-card border border-ecms-border rounded-xl p-5">
-            <h2 className="text-xl font-bold text-ecms-text mb-1">{selectedProject.name}</h2>
-            <p className="text-sm text-ecms-muted mb-6">{selectedProject.client}</p>
-
-            <div className="flex flex-col gap-4 text-sm">
-              <div className="flex items-start gap-3">
-                <IconBuildingFactory size={20} className="text-ecms-amber shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-ecms-muted text-xs">Project Type</p>
-                  <p className="font-medium text-ecms-text">{selectedProject.type}</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <IconCalendarStats size={20} className="text-ecms-amber shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-ecms-muted text-xs">Contract Details</p>
-                  <p className="font-medium text-ecms-text">{selectedProject.contractType} · ETB {(selectedProject.contractValue / 1000000).toFixed(1)}M</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <IconUsers size={20} className="text-ecms-amber shrink-0 mt-0.5" />
-                <div className="flex flex-col gap-2 w-full">
-                  <div>
-                    <p className="text-ecms-muted text-xs">Project Manager</p>
-                    <p className="font-medium text-ecms-text">{selectedProject.projectManager || selectedProject.pm}</p>
-                  </div>
-                  <div>
-                    <p className="text-ecms-muted text-xs">Site Supervisor</p>
-                    <p className="font-medium text-ecms-text">{selectedProject.supervisor}</p>
-                  </div>
-                  <div>
-                    <p className="text-ecms-muted text-xs">Consultant</p>
-                    <p className="font-medium text-ecms-text">{selectedProject.consultant}</p>
-                  </div>
-                  {selectedProject.contractor && (
-                    <div>
-                      <p className="text-ecms-muted text-xs">Contractor</p>
-                      <p className="font-medium text-ecms-text">{selectedProject.contractor}</p>
+      <Card>
+        {projects.length === 0 ? (
+          <EmptyState icon={<IconBuilding size={32} />} title="No projects yet" message="Create your first project using the form above." />
+        ) : (
+          <Table>
+            <THead><TH>Code</TH><TH>Name</TH><TH>Status</TH><TH>Sector</TH><TH>Start</TH><TH>Finish</TH><TH className="text-right">Contract Value</TH><TH>Counts</TH></THead>
+            <TBody>
+              {projects.map((p) => (
+                <TR key={p.id} className="hover:bg-ecms-elevated/40">
+                  <TD className="font-medium">
+                    <Link className="hover:text-ecms-amber" href={`/contracts?project=${p.id}`}>{p.project_code}</Link>
+                  </TD>
+                  <TD className="max-w-[280px] truncate">{p.name}</TD>
+                  <TD><StatusPill status={p.status} /></TD>
+                  <TD className="text-ecms-muted">{p.sector}</TD>
+                  <TD>{date(p.planned_start_date)}</TD>
+                  <TD>{date(p.planned_finish_date)}</TD>
+                  <TD className="text-right font-medium">{money(contractTotals.get(p.id) ?? 0, p.currency)}</TD>
+                  <TD>
+                    <div className="flex gap-1">
+                      <Badge tone="neutral">{p._count.contracts} contracts</Badge>
+                      <Badge tone="info">{p._count.measurements} meas.</Badge>
+                      <Badge tone="warning">{p._count.ipc_certificates} IPCs</Badge>
                     </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Milestone Tracker */}
-          <div className="bg-ecms-card border border-ecms-border rounded-xl p-5 flex-1">
-            <h2 className="text-base font-semibold text-ecms-text mb-4">Milestone Tracker</h2>
-            <div className="relative pl-4 border-l-2 border-ecms-border ml-2 flex flex-col gap-6">
-              {milestones.map((m, i) => (
-                <div key={i} className="relative">
-                  <div className={`absolute -left-[23px] top-1 w-3 h-3 rounded-full border-2 ${
-                    m.status === 'done' ? 'bg-ecms-success border-ecms-success' : 
-                    m.status === 'in-progress' ? 'bg-ecms-amber border-ecms-amber shadow-[0_0_8px_rgba(245,166,35,0.5)]' : 
-                    'bg-ecms-elevated border-ecms-border'
-                  }`} />
-                  <div>
-                    <p className={`font-medium text-sm ${m.status === 'upcoming' ? 'text-ecms-muted' : 'text-ecms-text'}`}>{m.label}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      {m.date && <span className="text-xs text-ecms-muted">{m.date}</span>}
-                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                        m.status === 'done' ? 'bg-ecms-success/10 text-ecms-success' : 
-                        m.status === 'in-progress' ? 'bg-ecms-amber/10 text-ecms-amber' : 
-                        'bg-ecms-elevated text-ecms-muted'
-                      }`}>
-                        {m.status.toUpperCase()}
-                      </span>
-                    </div>
-                  </div>
-                </div>
+                  </TD>
+                </TR>
               ))}
-            </div>
-          </div>
-        </div>
-        
-      </div>
+            </TBody>
+          </Table>
+        )}
+      </Card>
+
+      <Card title="Top Contracts by Value" icon={<IconBuilding size={18} />}>
+        {contracts.length === 0 ? (
+          <EmptyState title="No contracts" message="Contracts will appear once created against a project." />
+        ) : (
+          <Table>
+            <THead><TH>Contract</TH><TH>Project</TH><TH>Title</TH><TH>Status</TH><TH className="text-right">Revised Amount</TH></THead>
+            <TBody>
+              {contracts.map((c) => (
+                <TR key={c.id} className="hover:bg-ecms-elevated/40">
+                  <TD className="font-medium">{c.contract_number}</TD>
+                  <TD>{c.projects.project_code}</TD>
+                  <TD className="max-w-[280px] truncate text-ecms-muted">{c.title}</TD>
+                  <TD><StatusPill status={c.status} /></TD>
+                  <TD className="text-right font-medium">{money(Number(c.revised_contract_amount), c.currency)}</TD>
+                </TR>
+              ))}
+            </TBody>
+          </Table>
+        )}
+      </Card>
     </div>
   );
 }

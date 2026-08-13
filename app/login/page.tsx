@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { signIn } from 'next-auth/react';
+import { authClient } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
 import { Logo } from '@/components/ui/Logo';
 
@@ -16,17 +16,14 @@ export default function LoginPage() {
     setLoading(true);
     setError('');
 
-    const res = await signIn('credentials', {
-      redirect: false,
-      email,
-      password,
-    });
+    const { error } = await authClient.signIn.email({ email, password });
 
-    if (res?.error) {
+    if (error) {
       setError('Invalid credentials');
       setLoading(false);
     } else {
       router.push('/dashboard');
+      router.refresh();
     }
   };
 
