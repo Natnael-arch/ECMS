@@ -1,16 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { redirect } from 'next/navigation';
 import { db } from '@/lib/db';
-import { requireAppUser } from '@/lib/server/session';
+import { requireApiPermission } from '@/lib/server/session';
 import { getProjectContext } from '@/lib/server/context';
 import { writeAudit } from '@/lib/audit';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
-  await requireAppUser();
   const { tenantId, projectId, userId } = await getProjectContext();
   if (!projectId) return NextResponse.json({ error: 'No project selected' }, { status: 400 });
+  const auth = await requireApiPermission('measurement.create', projectId);
+  if (auth instanceof NextResponse) return auth;
 
   const form = await req.formData();
   const measurement_number = (form.get('measurement_number') as string)?.trim();

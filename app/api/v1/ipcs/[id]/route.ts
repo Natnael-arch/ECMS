@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { redirect } from 'next/navigation';
 import type { ipc_status } from '@/lib/generated/prisma/client';
 import { db } from '@/lib/db';
-import { requireAppUser } from '@/lib/server/session';
+import { requireApiPermission, IPC_TARGET_PERMISSIONS } from '@/lib/server/session';
 import { getProjectContext } from '@/lib/server/context';
 import { writeAudit } from '@/lib/audit';
 
@@ -21,7 +21,6 @@ const transitions: Record<ipc_status, ipc_status[]> = {
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  await requireAppUser();
   const { tenantId, projectId, userId } = await getProjectContext();
 
   const ipc = await db.ipc_certificates.findUnique({ where: { id } });
@@ -29,6 +28,14 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
   const form = await req.formData();
   const target = (form.get('status') as string) as ipc_status;
+
+  const requiredPermission = IPC_TARGET_PERMISSIONS[target];
+  if (!requiredPermission) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+  const auth = await requireApiPermission(requiredPermission, projectId);
+  if (auth instanceof NextResponse) return auth;
+
   const allowed = transitions[ipc.status];
   if (!allowed.includes(target)) {
     return NextResponse.json({ error: `Invalid transition ${ipc.status} -> ${target}` }, { status: 409 });

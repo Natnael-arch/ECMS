@@ -2,15 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { redirect } from 'next/navigation';
 import type { project_status } from '@/lib/generated/prisma/client';
 import { db } from '@/lib/db';
-import { requireAppUser } from '@/lib/server/session';
+import { requireApiPermission } from '@/lib/server/session';
 import { getProjectContext } from '@/lib/server/context';
 import { writeAudit } from '@/lib/audit';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
-  await requireAppUser();
-  const { tenantId, userId } = await getProjectContext();
+  const { tenantId, projectId, userId } = await getProjectContext();
+  const auth = await requireApiPermission('project.create', projectId);
+  if (auth instanceof NextResponse) return auth;
 
   const form = await req.formData();
   const project_code = (form.get('project_code') as string)?.trim();

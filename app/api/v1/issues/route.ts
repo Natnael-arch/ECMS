@@ -2,16 +2,17 @@ import { NextRequest, NextResponse } from 'next/server';
 import { redirect } from 'next/navigation';
 import type { issue_severity, issue_status } from '@/lib/generated/prisma/client';
 import { db } from '@/lib/db';
-import { requireAppUser } from '@/lib/server/session';
+import { requireApiPermission } from '@/lib/server/session';
 import { getProjectContext } from '@/lib/server/context';
 import { writeAudit } from '@/lib/audit';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
-  await requireAppUser();
   const { tenantId, projectId, userId } = await getProjectContext();
   if (!projectId) return NextResponse.json({ error: 'No project selected' }, { status: 400 });
+  const auth = await requireApiPermission('issue.manage', projectId);
+  if (auth instanceof NextResponse) return auth;
 
   const form = await req.formData();
   const issue_number = (form.get('issue_number') as string)?.trim();

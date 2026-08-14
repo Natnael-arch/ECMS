@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { redirect } from 'next/navigation';
 import { db } from '@/lib/db';
-import { requireAppUser } from '@/lib/server/session';
+import { requireApiPermission } from '@/lib/server/session';
 import { getProjectContext } from '@/lib/server/context';
 import { writeAudit } from '@/lib/audit';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
-  await requireAppUser();
-  const { tenantId, userId } = await getProjectContext();
+  const { tenantId, projectId, userId } = await getProjectContext();
+  const auth = await requireApiPermission('supplier.manage', projectId);
+  if (auth instanceof NextResponse) return auth;
 
   const form = await req.formData();
   const organization_id = (form.get('organization_id') as string)?.trim();
