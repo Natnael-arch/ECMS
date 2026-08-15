@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
+import { writeAudit } from '@/lib/audit';
 
 export async function getSession() {
   return auth.api.getSession({ headers: await headers() });
@@ -200,6 +201,48 @@ export async function requireApiPermission(
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
   return ctx;
+}
+
+export type SegregationOfDutyAudit = {
+  tenantId: string;
+  projectId?: string | null;
+  entityType: string;
+  entityId: string;
+  target?: string;
+};
+
+/**
+ * Enforce segregation of duty between two actors in a workflow step.
+ *
+ * Returns a 409 `NextResponse` when the acting user is the same person as the
+ * paired actor (e.g. approver == requester). A `SOD_VIOLATION_BLOCKED` audit
+ * event is written whenever a violation is detected and an `audit` context is
+ * supplied. Returns `null` when the check passes.
+ */
+export async function assertSegregationOfDuty(
+  actingUserId: string,
+  pairedActorId: string | null | undefined,
+  message: string,
+  audit?: SegregationOfDutyAudit
+): Promise<NextResponse | null> {
+  if (pairedActorId && pairedActorId === actingUserId) {
+    if (audit) {
+      await writeAudit({
+        tenantId: audit.tenantId,
+        projectId: audit.projectId ?? null,
+        actorUserId: actingUserId,
+        action: 'SOD_VIOLATION_BLOCKED',
+        entityType: audit.entityType,
+        entityId: audit.entityId,
+        metadata: { detail: message, requestedStatus: audit.target ?? null },
+      });
+    }
+    return NextResponse.json(
+      { error: 'Segregation of duty violation', detail: message },
+      { status: 409 }
+    );
+  }
+  return null;
 }
 
 /** Permission required for each IPC target status transition. */

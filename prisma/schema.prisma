@@ -109,6 +109,7 @@ model app_users {
   inspection_requests_inspection_requests_inspector_idToapp_users          inspection_requests[]    @relation("inspection_requests_inspector_idToapp_users")
   inspection_requests_inspection_requests_requested_byToapp_users          inspection_requests[]    @relation("inspection_requests_requested_byToapp_users")
   ipc_certificates_ipc_certificates_certified_byToapp_users                ipc_certificates[]       @relation("ipc_certificates_certified_byToapp_users")
+  ipc_certificates_ipc_certificates_paid_byToapp_users                     ipc_certificates[]       @relation("ipc_certificates_paid_byToapp_users")
   ipc_certificates_ipc_certificates_created_byToapp_users                  ipc_certificates[]       @relation("ipc_certificates_created_byToapp_users")
   ipc_certificates_ipc_certificates_recommended_byToapp_users              ipc_certificates[]       @relation("ipc_certificates_recommended_byToapp_users")
   ipc_certificates_ipc_certificates_submitted_byToapp_users                ipc_certificates[]       @relation("ipc_certificates_submitted_byToapp_users")
@@ -1127,6 +1128,7 @@ model ipc_certificates {
   certified_at                                         DateTime?               @db.Timestamptz(6)
   locked_at                                            DateTime?               @db.Timestamptz(6)
   paid_at                                              DateTime?               @db.Timestamptz(6)
+  paid_by                                              String?                 @db.Uuid
   notes                                                String?
   created_by                                           String?                 @db.Uuid
   created_at                                           DateTime                @default(now()) @db.Timestamptz(6)
@@ -1135,6 +1137,7 @@ model ipc_certificates {
   ipc_adjustments                                      ipc_adjustments[]
   boq_versions                                         boq_versions            @relation(fields: [boq_version_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   app_users_ipc_certificates_certified_byToapp_users   app_users?              @relation("ipc_certificates_certified_byToapp_users", fields: [certified_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  app_users_ipc_certificates_paid_byToapp_users        app_users?              @relation("ipc_certificates_paid_byToapp_users", fields: [paid_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
   contracts                                            contracts               @relation(fields: [contract_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   app_users_ipc_certificates_created_byToapp_users     app_users?              @relation("ipc_certificates_created_byToapp_users", fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
   projects                                             projects                @relation(fields: [project_id], references: [id], onDelete: Cascade, onUpdate: NoAction)

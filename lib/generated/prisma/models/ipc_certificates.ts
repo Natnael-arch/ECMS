@@ -115,6 +115,7 @@ export type Ipc_certificatesMinAggregateOutputType = {
   certified_at: Date | null
   locked_at: Date | null
   paid_at: Date | null
+  paid_by: string | null
   notes: string | null
   created_by: string | null
   created_at: Date | null
@@ -162,6 +163,7 @@ export type Ipc_certificatesMaxAggregateOutputType = {
   certified_at: Date | null
   locked_at: Date | null
   paid_at: Date | null
+  paid_by: string | null
   notes: string | null
   created_by: string | null
   created_at: Date | null
@@ -210,6 +212,7 @@ export type Ipc_certificatesCountAggregateOutputType = {
   certified_at: number
   locked_at: number
   paid_at: number
+  paid_by: number
   notes: number
   created_by: number
   created_at: number
@@ -307,6 +310,7 @@ export type Ipc_certificatesMinAggregateInputType = {
   certified_at?: true
   locked_at?: true
   paid_at?: true
+  paid_by?: true
   notes?: true
   created_by?: true
   created_at?: true
@@ -354,6 +358,7 @@ export type Ipc_certificatesMaxAggregateInputType = {
   certified_at?: true
   locked_at?: true
   paid_at?: true
+  paid_by?: true
   notes?: true
   created_by?: true
   created_at?: true
@@ -402,6 +407,7 @@ export type Ipc_certificatesCountAggregateInputType = {
   certified_at?: true
   locked_at?: true
   paid_at?: true
+  paid_by?: true
   notes?: true
   created_by?: true
   created_at?: true
@@ -537,6 +543,7 @@ export type Ipc_certificatesGroupByOutputType = {
   certified_at: Date | null
   locked_at: Date | null
   paid_at: Date | null
+  paid_by: string | null
   notes: string | null
   created_by: string | null
   created_at: Date
@@ -608,6 +615,7 @@ export type ipc_certificatesWhereInput = {
   certified_at?: Prisma.DateTimeNullableFilter<"ipc_certificates"> | Date | string | null
   locked_at?: Prisma.DateTimeNullableFilter<"ipc_certificates"> | Date | string | null
   paid_at?: Prisma.DateTimeNullableFilter<"ipc_certificates"> | Date | string | null
+  paid_by?: Prisma.UuidNullableFilter<"ipc_certificates"> | string | null
   notes?: Prisma.StringNullableFilter<"ipc_certificates"> | string | null
   created_by?: Prisma.UuidNullableFilter<"ipc_certificates"> | string | null
   created_at?: Prisma.DateTimeFilter<"ipc_certificates"> | Date | string
@@ -616,6 +624,7 @@ export type ipc_certificatesWhereInput = {
   ipc_adjustments?: Prisma.Ipc_adjustmentsListRelationFilter
   boq_versions?: Prisma.XOR<Prisma.Boq_versionsScalarRelationFilter, Prisma.boq_versionsWhereInput>
   app_users_ipc_certificates_certified_byToapp_users?: Prisma.XOR<Prisma.App_usersNullableScalarRelationFilter, Prisma.app_usersWhereInput> | null
+  app_users_ipc_certificates_paid_byToapp_users?: Prisma.XOR<Prisma.App_usersNullableScalarRelationFilter, Prisma.app_usersWhereInput> | null
   contracts?: Prisma.XOR<Prisma.ContractsScalarRelationFilter, Prisma.contractsWhereInput>
   app_users_ipc_certificates_created_byToapp_users?: Prisma.XOR<Prisma.App_usersNullableScalarRelationFilter, Prisma.app_usersWhereInput> | null
   projects?: Prisma.XOR<Prisma.ProjectsScalarRelationFilter, Prisma.projectsWhereInput>
@@ -667,6 +676,7 @@ export type ipc_certificatesOrderByWithRelationInput = {
   certified_at?: Prisma.SortOrderInput | Prisma.SortOrder
   locked_at?: Prisma.SortOrderInput | Prisma.SortOrder
   paid_at?: Prisma.SortOrderInput | Prisma.SortOrder
+  paid_by?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   created_by?: Prisma.SortOrderInput | Prisma.SortOrder
   created_at?: Prisma.SortOrder
@@ -675,6 +685,7 @@ export type ipc_certificatesOrderByWithRelationInput = {
   ipc_adjustments?: Prisma.ipc_adjustmentsOrderByRelationAggregateInput
   boq_versions?: Prisma.boq_versionsOrderByWithRelationInput
   app_users_ipc_certificates_certified_byToapp_users?: Prisma.app_usersOrderByWithRelationInput
+  app_users_ipc_certificates_paid_byToapp_users?: Prisma.app_usersOrderByWithRelationInput
   contracts?: Prisma.contractsOrderByWithRelationInput
   app_users_ipc_certificates_created_byToapp_users?: Prisma.app_usersOrderByWithRelationInput
   projects?: Prisma.projectsOrderByWithRelationInput
@@ -730,6 +741,7 @@ export type ipc_certificatesWhereUniqueInput = Prisma.AtLeast<{
   certified_at?: Prisma.DateTimeNullableFilter<"ipc_certificates"> | Date | string | null
   locked_at?: Prisma.DateTimeNullableFilter<"ipc_certificates"> | Date | string | null
   paid_at?: Prisma.DateTimeNullableFilter<"ipc_certificates"> | Date | string | null
+  paid_by?: Prisma.UuidNullableFilter<"ipc_certificates"> | string | null
   notes?: Prisma.StringNullableFilter<"ipc_certificates"> | string | null
   created_by?: Prisma.UuidNullableFilter<"ipc_certificates"> | string | null
   created_at?: Prisma.DateTimeFilter<"ipc_certificates"> | Date | string
@@ -738,6 +750,7 @@ export type ipc_certificatesWhereUniqueInput = Prisma.AtLeast<{
   ipc_adjustments?: Prisma.Ipc_adjustmentsListRelationFilter
   boq_versions?: Prisma.XOR<Prisma.Boq_versionsScalarRelationFilter, Prisma.boq_versionsWhereInput>
   app_users_ipc_certificates_certified_byToapp_users?: Prisma.XOR<Prisma.App_usersNullableScalarRelationFilter, Prisma.app_usersWhereInput> | null
+  app_users_ipc_certificates_paid_byToapp_users?: Prisma.XOR<Prisma.App_usersNullableScalarRelationFilter, Prisma.app_usersWhereInput> | null
   contracts?: Prisma.XOR<Prisma.ContractsScalarRelationFilter, Prisma.contractsWhereInput>
   app_users_ipc_certificates_created_byToapp_users?: Prisma.XOR<Prisma.App_usersNullableScalarRelationFilter, Prisma.app_usersWhereInput> | null
   projects?: Prisma.XOR<Prisma.ProjectsScalarRelationFilter, Prisma.projectsWhereInput>
@@ -789,6 +802,7 @@ export type ipc_certificatesOrderByWithAggregationInput = {
   certified_at?: Prisma.SortOrderInput | Prisma.SortOrder
   locked_at?: Prisma.SortOrderInput | Prisma.SortOrder
   paid_at?: Prisma.SortOrderInput | Prisma.SortOrder
+  paid_by?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   created_by?: Prisma.SortOrderInput | Prisma.SortOrder
   created_at?: Prisma.SortOrder
@@ -845,6 +859,7 @@ export type ipc_certificatesScalarWhereWithAggregatesInput = {
   certified_at?: Prisma.DateTimeNullableWithAggregatesFilter<"ipc_certificates"> | Date | string | null
   locked_at?: Prisma.DateTimeNullableWithAggregatesFilter<"ipc_certificates"> | Date | string | null
   paid_at?: Prisma.DateTimeNullableWithAggregatesFilter<"ipc_certificates"> | Date | string | null
+  paid_by?: Prisma.UuidNullableWithAggregatesFilter<"ipc_certificates"> | string | null
   notes?: Prisma.StringNullableWithAggregatesFilter<"ipc_certificates"> | string | null
   created_by?: Prisma.UuidNullableWithAggregatesFilter<"ipc_certificates"> | string | null
   created_at?: Prisma.DateTimeWithAggregatesFilter<"ipc_certificates"> | Date | string
@@ -894,6 +909,7 @@ export type ipc_certificatesCreateInput = {
   ipc_adjustments?: Prisma.ipc_adjustmentsCreateNestedManyWithoutIpc_certificatesInput
   boq_versions: Prisma.boq_versionsCreateNestedOneWithoutIpc_certificatesInput
   app_users_ipc_certificates_certified_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_certified_byToapp_usersInput
+  app_users_ipc_certificates_paid_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_paid_byToapp_usersInput
   contracts: Prisma.contractsCreateNestedOneWithoutIpc_certificatesInput
   app_users_ipc_certificates_created_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_created_byToapp_usersInput
   projects: Prisma.projectsCreateNestedOneWithoutIpc_certificatesInput
@@ -945,6 +961,7 @@ export type ipc_certificatesUncheckedCreateInput = {
   certified_at?: Date | string | null
   locked_at?: Date | string | null
   paid_at?: Date | string | null
+  paid_by?: string | null
   notes?: string | null
   created_by?: string | null
   created_at?: Date | string
@@ -998,6 +1015,7 @@ export type ipc_certificatesUpdateInput = {
   ipc_adjustments?: Prisma.ipc_adjustmentsUpdateManyWithoutIpc_certificatesNestedInput
   boq_versions?: Prisma.boq_versionsUpdateOneRequiredWithoutIpc_certificatesNestedInput
   app_users_ipc_certificates_certified_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_certified_byToapp_usersNestedInput
+  app_users_ipc_certificates_paid_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_paid_byToapp_usersNestedInput
   contracts?: Prisma.contractsUpdateOneRequiredWithoutIpc_certificatesNestedInput
   app_users_ipc_certificates_created_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_created_byToapp_usersNestedInput
   projects?: Prisma.projectsUpdateOneRequiredWithoutIpc_certificatesNestedInput
@@ -1049,6 +1067,7 @@ export type ipc_certificatesUncheckedUpdateInput = {
   certified_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   locked_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paid_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paid_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1101,6 +1120,7 @@ export type ipc_certificatesCreateManyInput = {
   certified_at?: Date | string | null
   locked_at?: Date | string | null
   paid_at?: Date | string | null
+  paid_by?: string | null
   notes?: string | null
   created_by?: string | null
   created_at?: Date | string
@@ -1190,6 +1210,7 @@ export type ipc_certificatesUncheckedUpdateManyInput = {
   certified_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   locked_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paid_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paid_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1258,6 +1279,7 @@ export type ipc_certificatesCountOrderByAggregateInput = {
   certified_at?: Prisma.SortOrder
   locked_at?: Prisma.SortOrder
   paid_at?: Prisma.SortOrder
+  paid_by?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   created_by?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
@@ -1329,6 +1351,7 @@ export type ipc_certificatesMaxOrderByAggregateInput = {
   certified_at?: Prisma.SortOrder
   locked_at?: Prisma.SortOrder
   paid_at?: Prisma.SortOrder
+  paid_by?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   created_by?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
@@ -1376,6 +1399,7 @@ export type ipc_certificatesMinOrderByAggregateInput = {
   certified_at?: Prisma.SortOrder
   locked_at?: Prisma.SortOrder
   paid_at?: Prisma.SortOrder
+  paid_by?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   created_by?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
@@ -1414,6 +1438,13 @@ export type ipc_certificatesCreateNestedManyWithoutApp_users_ipc_certificates_ce
   connect?: Prisma.ipc_certificatesWhereUniqueInput | Prisma.ipc_certificatesWhereUniqueInput[]
 }
 
+export type ipc_certificatesCreateNestedManyWithoutApp_users_ipc_certificates_paid_byToapp_usersInput = {
+  create?: Prisma.XOR<Prisma.ipc_certificatesCreateWithoutApp_users_ipc_certificates_paid_byToapp_usersInput, Prisma.ipc_certificatesUncheckedCreateWithoutApp_users_ipc_certificates_paid_byToapp_usersInput> | Prisma.ipc_certificatesCreateWithoutApp_users_ipc_certificates_paid_byToapp_usersInput[] | Prisma.ipc_certificatesUncheckedCreateWithoutApp_users_ipc_certificates_paid_byToapp_usersInput[]
+  connectOrCreate?: Prisma.ipc_certificatesCreateOrConnectWithoutApp_users_ipc_certificates_paid_byToapp_usersInput | Prisma.ipc_certificatesCreateOrConnectWithoutApp_users_ipc_certificates_paid_byToapp_usersInput[]
+  createMany?: Prisma.ipc_certificatesCreateManyApp_users_ipc_certificates_paid_byToapp_usersInputEnvelope
+  connect?: Prisma.ipc_certificatesWhereUniqueInput | Prisma.ipc_certificatesWhereUniqueInput[]
+}
+
 export type ipc_certificatesCreateNestedManyWithoutApp_users_ipc_certificates_created_byToapp_usersInput = {
   create?: Prisma.XOR<Prisma.ipc_certificatesCreateWithoutApp_users_ipc_certificates_created_byToapp_usersInput, Prisma.ipc_certificatesUncheckedCreateWithoutApp_users_ipc_certificates_created_byToapp_usersInput> | Prisma.ipc_certificatesCreateWithoutApp_users_ipc_certificates_created_byToapp_usersInput[] | Prisma.ipc_certificatesUncheckedCreateWithoutApp_users_ipc_certificates_created_byToapp_usersInput[]
   connectOrCreate?: Prisma.ipc_certificatesCreateOrConnectWithoutApp_users_ipc_certificates_created_byToapp_usersInput | Prisma.ipc_certificatesCreateOrConnectWithoutApp_users_ipc_certificates_created_byToapp_usersInput[]
@@ -1439,6 +1470,13 @@ export type ipc_certificatesUncheckedCreateNestedManyWithoutApp_users_ipc_certif
   create?: Prisma.XOR<Prisma.ipc_certificatesCreateWithoutApp_users_ipc_certificates_certified_byToapp_usersInput, Prisma.ipc_certificatesUncheckedCreateWithoutApp_users_ipc_certificates_certified_byToapp_usersInput> | Prisma.ipc_certificatesCreateWithoutApp_users_ipc_certificates_certified_byToapp_usersInput[] | Prisma.ipc_certificatesUncheckedCreateWithoutApp_users_ipc_certificates_certified_byToapp_usersInput[]
   connectOrCreate?: Prisma.ipc_certificatesCreateOrConnectWithoutApp_users_ipc_certificates_certified_byToapp_usersInput | Prisma.ipc_certificatesCreateOrConnectWithoutApp_users_ipc_certificates_certified_byToapp_usersInput[]
   createMany?: Prisma.ipc_certificatesCreateManyApp_users_ipc_certificates_certified_byToapp_usersInputEnvelope
+  connect?: Prisma.ipc_certificatesWhereUniqueInput | Prisma.ipc_certificatesWhereUniqueInput[]
+}
+
+export type ipc_certificatesUncheckedCreateNestedManyWithoutApp_users_ipc_certificates_paid_byToapp_usersInput = {
+  create?: Prisma.XOR<Prisma.ipc_certificatesCreateWithoutApp_users_ipc_certificates_paid_byToapp_usersInput, Prisma.ipc_certificatesUncheckedCreateWithoutApp_users_ipc_certificates_paid_byToapp_usersInput> | Prisma.ipc_certificatesCreateWithoutApp_users_ipc_certificates_paid_byToapp_usersInput[] | Prisma.ipc_certificatesUncheckedCreateWithoutApp_users_ipc_certificates_paid_byToapp_usersInput[]
+  connectOrCreate?: Prisma.ipc_certificatesCreateOrConnectWithoutApp_users_ipc_certificates_paid_byToapp_usersInput | Prisma.ipc_certificatesCreateOrConnectWithoutApp_users_ipc_certificates_paid_byToapp_usersInput[]
+  createMany?: Prisma.ipc_certificatesCreateManyApp_users_ipc_certificates_paid_byToapp_usersInputEnvelope
   connect?: Prisma.ipc_certificatesWhereUniqueInput | Prisma.ipc_certificatesWhereUniqueInput[]
 }
 
@@ -1474,6 +1512,20 @@ export type ipc_certificatesUpdateManyWithoutApp_users_ipc_certificates_certifie
   connect?: Prisma.ipc_certificatesWhereUniqueInput | Prisma.ipc_certificatesWhereUniqueInput[]
   update?: Prisma.ipc_certificatesUpdateWithWhereUniqueWithoutApp_users_ipc_certificates_certified_byToapp_usersInput | Prisma.ipc_certificatesUpdateWithWhereUniqueWithoutApp_users_ipc_certificates_certified_byToapp_usersInput[]
   updateMany?: Prisma.ipc_certificatesUpdateManyWithWhereWithoutApp_users_ipc_certificates_certified_byToapp_usersInput | Prisma.ipc_certificatesUpdateManyWithWhereWithoutApp_users_ipc_certificates_certified_byToapp_usersInput[]
+  deleteMany?: Prisma.ipc_certificatesScalarWhereInput | Prisma.ipc_certificatesScalarWhereInput[]
+}
+
+export type ipc_certificatesUpdateManyWithoutApp_users_ipc_certificates_paid_byToapp_usersNestedInput = {
+  create?: Prisma.XOR<Prisma.ipc_certificatesCreateWithoutApp_users_ipc_certificates_paid_byToapp_usersInput, Prisma.ipc_certificatesUncheckedCreateWithoutApp_users_ipc_certificates_paid_byToapp_usersInput> | Prisma.ipc_certificatesCreateWithoutApp_users_ipc_certificates_paid_byToapp_usersInput[] | Prisma.ipc_certificatesUncheckedCreateWithoutApp_users_ipc_certificates_paid_byToapp_usersInput[]
+  connectOrCreate?: Prisma.ipc_certificatesCreateOrConnectWithoutApp_users_ipc_certificates_paid_byToapp_usersInput | Prisma.ipc_certificatesCreateOrConnectWithoutApp_users_ipc_certificates_paid_byToapp_usersInput[]
+  upsert?: Prisma.ipc_certificatesUpsertWithWhereUniqueWithoutApp_users_ipc_certificates_paid_byToapp_usersInput | Prisma.ipc_certificatesUpsertWithWhereUniqueWithoutApp_users_ipc_certificates_paid_byToapp_usersInput[]
+  createMany?: Prisma.ipc_certificatesCreateManyApp_users_ipc_certificates_paid_byToapp_usersInputEnvelope
+  set?: Prisma.ipc_certificatesWhereUniqueInput | Prisma.ipc_certificatesWhereUniqueInput[]
+  disconnect?: Prisma.ipc_certificatesWhereUniqueInput | Prisma.ipc_certificatesWhereUniqueInput[]
+  delete?: Prisma.ipc_certificatesWhereUniqueInput | Prisma.ipc_certificatesWhereUniqueInput[]
+  connect?: Prisma.ipc_certificatesWhereUniqueInput | Prisma.ipc_certificatesWhereUniqueInput[]
+  update?: Prisma.ipc_certificatesUpdateWithWhereUniqueWithoutApp_users_ipc_certificates_paid_byToapp_usersInput | Prisma.ipc_certificatesUpdateWithWhereUniqueWithoutApp_users_ipc_certificates_paid_byToapp_usersInput[]
+  updateMany?: Prisma.ipc_certificatesUpdateManyWithWhereWithoutApp_users_ipc_certificates_paid_byToapp_usersInput | Prisma.ipc_certificatesUpdateManyWithWhereWithoutApp_users_ipc_certificates_paid_byToapp_usersInput[]
   deleteMany?: Prisma.ipc_certificatesScalarWhereInput | Prisma.ipc_certificatesScalarWhereInput[]
 }
 
@@ -1530,6 +1582,20 @@ export type ipc_certificatesUncheckedUpdateManyWithoutApp_users_ipc_certificates
   connect?: Prisma.ipc_certificatesWhereUniqueInput | Prisma.ipc_certificatesWhereUniqueInput[]
   update?: Prisma.ipc_certificatesUpdateWithWhereUniqueWithoutApp_users_ipc_certificates_certified_byToapp_usersInput | Prisma.ipc_certificatesUpdateWithWhereUniqueWithoutApp_users_ipc_certificates_certified_byToapp_usersInput[]
   updateMany?: Prisma.ipc_certificatesUpdateManyWithWhereWithoutApp_users_ipc_certificates_certified_byToapp_usersInput | Prisma.ipc_certificatesUpdateManyWithWhereWithoutApp_users_ipc_certificates_certified_byToapp_usersInput[]
+  deleteMany?: Prisma.ipc_certificatesScalarWhereInput | Prisma.ipc_certificatesScalarWhereInput[]
+}
+
+export type ipc_certificatesUncheckedUpdateManyWithoutApp_users_ipc_certificates_paid_byToapp_usersNestedInput = {
+  create?: Prisma.XOR<Prisma.ipc_certificatesCreateWithoutApp_users_ipc_certificates_paid_byToapp_usersInput, Prisma.ipc_certificatesUncheckedCreateWithoutApp_users_ipc_certificates_paid_byToapp_usersInput> | Prisma.ipc_certificatesCreateWithoutApp_users_ipc_certificates_paid_byToapp_usersInput[] | Prisma.ipc_certificatesUncheckedCreateWithoutApp_users_ipc_certificates_paid_byToapp_usersInput[]
+  connectOrCreate?: Prisma.ipc_certificatesCreateOrConnectWithoutApp_users_ipc_certificates_paid_byToapp_usersInput | Prisma.ipc_certificatesCreateOrConnectWithoutApp_users_ipc_certificates_paid_byToapp_usersInput[]
+  upsert?: Prisma.ipc_certificatesUpsertWithWhereUniqueWithoutApp_users_ipc_certificates_paid_byToapp_usersInput | Prisma.ipc_certificatesUpsertWithWhereUniqueWithoutApp_users_ipc_certificates_paid_byToapp_usersInput[]
+  createMany?: Prisma.ipc_certificatesCreateManyApp_users_ipc_certificates_paid_byToapp_usersInputEnvelope
+  set?: Prisma.ipc_certificatesWhereUniqueInput | Prisma.ipc_certificatesWhereUniqueInput[]
+  disconnect?: Prisma.ipc_certificatesWhereUniqueInput | Prisma.ipc_certificatesWhereUniqueInput[]
+  delete?: Prisma.ipc_certificatesWhereUniqueInput | Prisma.ipc_certificatesWhereUniqueInput[]
+  connect?: Prisma.ipc_certificatesWhereUniqueInput | Prisma.ipc_certificatesWhereUniqueInput[]
+  update?: Prisma.ipc_certificatesUpdateWithWhereUniqueWithoutApp_users_ipc_certificates_paid_byToapp_usersInput | Prisma.ipc_certificatesUpdateWithWhereUniqueWithoutApp_users_ipc_certificates_paid_byToapp_usersInput[]
+  updateMany?: Prisma.ipc_certificatesUpdateManyWithWhereWithoutApp_users_ipc_certificates_paid_byToapp_usersInput | Prisma.ipc_certificatesUpdateManyWithWhereWithoutApp_users_ipc_certificates_paid_byToapp_usersInput[]
   deleteMany?: Prisma.ipc_certificatesScalarWhereInput | Prisma.ipc_certificatesScalarWhereInput[]
 }
 
@@ -1802,6 +1868,7 @@ export type ipc_certificatesCreateWithoutApp_users_ipc_certificates_certified_by
   row_version?: bigint | number
   ipc_adjustments?: Prisma.ipc_adjustmentsCreateNestedManyWithoutIpc_certificatesInput
   boq_versions: Prisma.boq_versionsCreateNestedOneWithoutIpc_certificatesInput
+  app_users_ipc_certificates_paid_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_paid_byToapp_usersInput
   contracts: Prisma.contractsCreateNestedOneWithoutIpc_certificatesInput
   app_users_ipc_certificates_created_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_created_byToapp_usersInput
   projects: Prisma.projectsCreateNestedOneWithoutIpc_certificatesInput
@@ -1852,6 +1919,7 @@ export type ipc_certificatesUncheckedCreateWithoutApp_users_ipc_certificates_cer
   certified_at?: Date | string | null
   locked_at?: Date | string | null
   paid_at?: Date | string | null
+  paid_by?: string | null
   notes?: string | null
   created_by?: string | null
   created_at?: Date | string
@@ -1870,6 +1938,120 @@ export type ipc_certificatesCreateOrConnectWithoutApp_users_ipc_certificates_cer
 
 export type ipc_certificatesCreateManyApp_users_ipc_certificates_certified_byToapp_usersInputEnvelope = {
   data: Prisma.ipc_certificatesCreateManyApp_users_ipc_certificates_certified_byToapp_usersInput | Prisma.ipc_certificatesCreateManyApp_users_ipc_certificates_certified_byToapp_usersInput[]
+  skipDuplicates?: boolean
+}
+
+export type ipc_certificatesCreateWithoutApp_users_ipc_certificates_paid_byToapp_usersInput = {
+  id?: string
+  ipc_number: number
+  certificate_reference?: string | null
+  period_start: Date | string
+  period_end: Date | string
+  status?: $Enums.ipc_status
+  currency?: string
+  calculation_version?: string | null
+  rule_snapshot?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  calculation_hash?: string | null
+  previous_work_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_work_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_work_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  previous_mos_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_mos_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_mos_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_additions?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_deductions?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_retention?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_retention?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_advance_recovery?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_advance_recovery?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_price_adjustment?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_price_adjustment?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_withholding_tax?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_vat?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_gross_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  net_current_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_net_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  submitted_at?: Date | string | null
+  recommended_at?: Date | string | null
+  certified_at?: Date | string | null
+  locked_at?: Date | string | null
+  paid_at?: Date | string | null
+  notes?: string | null
+  created_at?: Date | string
+  updated_at?: Date | string
+  row_version?: bigint | number
+  ipc_adjustments?: Prisma.ipc_adjustmentsCreateNestedManyWithoutIpc_certificatesInput
+  boq_versions: Prisma.boq_versionsCreateNestedOneWithoutIpc_certificatesInput
+  app_users_ipc_certificates_certified_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_certified_byToapp_usersInput
+  contracts: Prisma.contractsCreateNestedOneWithoutIpc_certificatesInput
+  app_users_ipc_certificates_created_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_created_byToapp_usersInput
+  projects: Prisma.projectsCreateNestedOneWithoutIpc_certificatesInput
+  app_users_ipc_certificates_recommended_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_recommended_byToapp_usersInput
+  app_users_ipc_certificates_submitted_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_submitted_byToapp_usersInput
+  ipc_lines?: Prisma.ipc_linesCreateNestedManyWithoutIpc_certificatesInput
+  ipc_materials_on_site?: Prisma.ipc_materials_on_siteCreateNestedManyWithoutIpc_certificatesInput
+  payments?: Prisma.paymentsCreateNestedManyWithoutIpc_certificatesInput
+}
+
+export type ipc_certificatesUncheckedCreateWithoutApp_users_ipc_certificates_paid_byToapp_usersInput = {
+  id?: string
+  project_id: string
+  contract_id: string
+  boq_version_id: string
+  ipc_number: number
+  certificate_reference?: string | null
+  period_start: Date | string
+  period_end: Date | string
+  status?: $Enums.ipc_status
+  currency?: string
+  calculation_version?: string | null
+  rule_snapshot?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  calculation_hash?: string | null
+  previous_work_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_work_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_work_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  previous_mos_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_mos_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_mos_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_additions?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_deductions?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_retention?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_retention?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_advance_recovery?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_advance_recovery?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_price_adjustment?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_price_adjustment?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_withholding_tax?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_vat?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_gross_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  net_current_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_net_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  submitted_by?: string | null
+  submitted_at?: Date | string | null
+  recommended_by?: string | null
+  recommended_at?: Date | string | null
+  certified_by?: string | null
+  certified_at?: Date | string | null
+  locked_at?: Date | string | null
+  paid_at?: Date | string | null
+  notes?: string | null
+  created_by?: string | null
+  created_at?: Date | string
+  updated_at?: Date | string
+  row_version?: bigint | number
+  ipc_adjustments?: Prisma.ipc_adjustmentsUncheckedCreateNestedManyWithoutIpc_certificatesInput
+  ipc_lines?: Prisma.ipc_linesUncheckedCreateNestedManyWithoutIpc_certificatesInput
+  ipc_materials_on_site?: Prisma.ipc_materials_on_siteUncheckedCreateNestedManyWithoutIpc_certificatesInput
+  payments?: Prisma.paymentsUncheckedCreateNestedManyWithoutIpc_certificatesInput
+}
+
+export type ipc_certificatesCreateOrConnectWithoutApp_users_ipc_certificates_paid_byToapp_usersInput = {
+  where: Prisma.ipc_certificatesWhereUniqueInput
+  create: Prisma.XOR<Prisma.ipc_certificatesCreateWithoutApp_users_ipc_certificates_paid_byToapp_usersInput, Prisma.ipc_certificatesUncheckedCreateWithoutApp_users_ipc_certificates_paid_byToapp_usersInput>
+}
+
+export type ipc_certificatesCreateManyApp_users_ipc_certificates_paid_byToapp_usersInputEnvelope = {
+  data: Prisma.ipc_certificatesCreateManyApp_users_ipc_certificates_paid_byToapp_usersInput | Prisma.ipc_certificatesCreateManyApp_users_ipc_certificates_paid_byToapp_usersInput[]
   skipDuplicates?: boolean
 }
 
@@ -1915,6 +2097,7 @@ export type ipc_certificatesCreateWithoutApp_users_ipc_certificates_created_byTo
   ipc_adjustments?: Prisma.ipc_adjustmentsCreateNestedManyWithoutIpc_certificatesInput
   boq_versions: Prisma.boq_versionsCreateNestedOneWithoutIpc_certificatesInput
   app_users_ipc_certificates_certified_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_certified_byToapp_usersInput
+  app_users_ipc_certificates_paid_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_paid_byToapp_usersInput
   contracts: Prisma.contractsCreateNestedOneWithoutIpc_certificatesInput
   projects: Prisma.projectsCreateNestedOneWithoutIpc_certificatesInput
   app_users_ipc_certificates_recommended_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_recommended_byToapp_usersInput
@@ -1965,6 +2148,7 @@ export type ipc_certificatesUncheckedCreateWithoutApp_users_ipc_certificates_cre
   certified_at?: Date | string | null
   locked_at?: Date | string | null
   paid_at?: Date | string | null
+  paid_by?: string | null
   notes?: string | null
   created_at?: Date | string
   updated_at?: Date | string
@@ -2027,6 +2211,7 @@ export type ipc_certificatesCreateWithoutApp_users_ipc_certificates_recommended_
   ipc_adjustments?: Prisma.ipc_adjustmentsCreateNestedManyWithoutIpc_certificatesInput
   boq_versions: Prisma.boq_versionsCreateNestedOneWithoutIpc_certificatesInput
   app_users_ipc_certificates_certified_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_certified_byToapp_usersInput
+  app_users_ipc_certificates_paid_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_paid_byToapp_usersInput
   contracts: Prisma.contractsCreateNestedOneWithoutIpc_certificatesInput
   app_users_ipc_certificates_created_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_created_byToapp_usersInput
   projects: Prisma.projectsCreateNestedOneWithoutIpc_certificatesInput
@@ -2076,6 +2261,7 @@ export type ipc_certificatesUncheckedCreateWithoutApp_users_ipc_certificates_rec
   certified_at?: Date | string | null
   locked_at?: Date | string | null
   paid_at?: Date | string | null
+  paid_by?: string | null
   notes?: string | null
   created_by?: string | null
   created_at?: Date | string
@@ -2139,6 +2325,7 @@ export type ipc_certificatesCreateWithoutApp_users_ipc_certificates_submitted_by
   ipc_adjustments?: Prisma.ipc_adjustmentsCreateNestedManyWithoutIpc_certificatesInput
   boq_versions: Prisma.boq_versionsCreateNestedOneWithoutIpc_certificatesInput
   app_users_ipc_certificates_certified_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_certified_byToapp_usersInput
+  app_users_ipc_certificates_paid_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_paid_byToapp_usersInput
   contracts: Prisma.contractsCreateNestedOneWithoutIpc_certificatesInput
   app_users_ipc_certificates_created_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_created_byToapp_usersInput
   projects: Prisma.projectsCreateNestedOneWithoutIpc_certificatesInput
@@ -2188,6 +2375,7 @@ export type ipc_certificatesUncheckedCreateWithoutApp_users_ipc_certificates_sub
   certified_at?: Date | string | null
   locked_at?: Date | string | null
   paid_at?: Date | string | null
+  paid_by?: string | null
   notes?: string | null
   created_by?: string | null
   created_at?: Date | string
@@ -2269,11 +2457,28 @@ export type ipc_certificatesScalarWhereInput = {
   certified_at?: Prisma.DateTimeNullableFilter<"ipc_certificates"> | Date | string | null
   locked_at?: Prisma.DateTimeNullableFilter<"ipc_certificates"> | Date | string | null
   paid_at?: Prisma.DateTimeNullableFilter<"ipc_certificates"> | Date | string | null
+  paid_by?: Prisma.UuidNullableFilter<"ipc_certificates"> | string | null
   notes?: Prisma.StringNullableFilter<"ipc_certificates"> | string | null
   created_by?: Prisma.UuidNullableFilter<"ipc_certificates"> | string | null
   created_at?: Prisma.DateTimeFilter<"ipc_certificates"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"ipc_certificates"> | Date | string
   row_version?: Prisma.BigIntFilter<"ipc_certificates"> | bigint | number
+}
+
+export type ipc_certificatesUpsertWithWhereUniqueWithoutApp_users_ipc_certificates_paid_byToapp_usersInput = {
+  where: Prisma.ipc_certificatesWhereUniqueInput
+  update: Prisma.XOR<Prisma.ipc_certificatesUpdateWithoutApp_users_ipc_certificates_paid_byToapp_usersInput, Prisma.ipc_certificatesUncheckedUpdateWithoutApp_users_ipc_certificates_paid_byToapp_usersInput>
+  create: Prisma.XOR<Prisma.ipc_certificatesCreateWithoutApp_users_ipc_certificates_paid_byToapp_usersInput, Prisma.ipc_certificatesUncheckedCreateWithoutApp_users_ipc_certificates_paid_byToapp_usersInput>
+}
+
+export type ipc_certificatesUpdateWithWhereUniqueWithoutApp_users_ipc_certificates_paid_byToapp_usersInput = {
+  where: Prisma.ipc_certificatesWhereUniqueInput
+  data: Prisma.XOR<Prisma.ipc_certificatesUpdateWithoutApp_users_ipc_certificates_paid_byToapp_usersInput, Prisma.ipc_certificatesUncheckedUpdateWithoutApp_users_ipc_certificates_paid_byToapp_usersInput>
+}
+
+export type ipc_certificatesUpdateManyWithWhereWithoutApp_users_ipc_certificates_paid_byToapp_usersInput = {
+  where: Prisma.ipc_certificatesScalarWhereInput
+  data: Prisma.XOR<Prisma.ipc_certificatesUpdateManyMutationInput, Prisma.ipc_certificatesUncheckedUpdateManyWithoutApp_users_ipc_certificates_paid_byToapp_usersInput>
 }
 
 export type ipc_certificatesUpsertWithWhereUniqueWithoutApp_users_ipc_certificates_created_byToapp_usersInput = {
@@ -2365,6 +2570,7 @@ export type ipc_certificatesCreateWithoutBoq_versionsInput = {
   row_version?: bigint | number
   ipc_adjustments?: Prisma.ipc_adjustmentsCreateNestedManyWithoutIpc_certificatesInput
   app_users_ipc_certificates_certified_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_certified_byToapp_usersInput
+  app_users_ipc_certificates_paid_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_paid_byToapp_usersInput
   contracts: Prisma.contractsCreateNestedOneWithoutIpc_certificatesInput
   app_users_ipc_certificates_created_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_created_byToapp_usersInput
   projects: Prisma.projectsCreateNestedOneWithoutIpc_certificatesInput
@@ -2415,6 +2621,7 @@ export type ipc_certificatesUncheckedCreateWithoutBoq_versionsInput = {
   certified_at?: Date | string | null
   locked_at?: Date | string | null
   paid_at?: Date | string | null
+  paid_by?: string | null
   notes?: string | null
   created_by?: string | null
   created_at?: Date | string
@@ -2494,6 +2701,7 @@ export type ipc_certificatesCreateWithoutContractsInput = {
   ipc_adjustments?: Prisma.ipc_adjustmentsCreateNestedManyWithoutIpc_certificatesInput
   boq_versions: Prisma.boq_versionsCreateNestedOneWithoutIpc_certificatesInput
   app_users_ipc_certificates_certified_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_certified_byToapp_usersInput
+  app_users_ipc_certificates_paid_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_paid_byToapp_usersInput
   app_users_ipc_certificates_created_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_created_byToapp_usersInput
   projects: Prisma.projectsCreateNestedOneWithoutIpc_certificatesInput
   app_users_ipc_certificates_recommended_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_recommended_byToapp_usersInput
@@ -2543,6 +2751,7 @@ export type ipc_certificatesUncheckedCreateWithoutContractsInput = {
   certified_at?: Date | string | null
   locked_at?: Date | string | null
   paid_at?: Date | string | null
+  paid_by?: string | null
   notes?: string | null
   created_by?: string | null
   created_at?: Date | string
@@ -2621,6 +2830,7 @@ export type ipc_certificatesCreateWithoutIpc_adjustmentsInput = {
   row_version?: bigint | number
   boq_versions: Prisma.boq_versionsCreateNestedOneWithoutIpc_certificatesInput
   app_users_ipc_certificates_certified_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_certified_byToapp_usersInput
+  app_users_ipc_certificates_paid_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_paid_byToapp_usersInput
   contracts: Prisma.contractsCreateNestedOneWithoutIpc_certificatesInput
   app_users_ipc_certificates_created_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_created_byToapp_usersInput
   projects: Prisma.projectsCreateNestedOneWithoutIpc_certificatesInput
@@ -2672,6 +2882,7 @@ export type ipc_certificatesUncheckedCreateWithoutIpc_adjustmentsInput = {
   certified_at?: Date | string | null
   locked_at?: Date | string | null
   paid_at?: Date | string | null
+  paid_by?: string | null
   notes?: string | null
   created_by?: string | null
   created_at?: Date | string
@@ -2739,6 +2950,7 @@ export type ipc_certificatesUpdateWithoutIpc_adjustmentsInput = {
   row_version?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   boq_versions?: Prisma.boq_versionsUpdateOneRequiredWithoutIpc_certificatesNestedInput
   app_users_ipc_certificates_certified_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_certified_byToapp_usersNestedInput
+  app_users_ipc_certificates_paid_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_paid_byToapp_usersNestedInput
   contracts?: Prisma.contractsUpdateOneRequiredWithoutIpc_certificatesNestedInput
   app_users_ipc_certificates_created_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_created_byToapp_usersNestedInput
   projects?: Prisma.projectsUpdateOneRequiredWithoutIpc_certificatesNestedInput
@@ -2790,6 +3002,7 @@ export type ipc_certificatesUncheckedUpdateWithoutIpc_adjustmentsInput = {
   certified_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   locked_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paid_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paid_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2842,6 +3055,7 @@ export type ipc_certificatesCreateWithoutIpc_linesInput = {
   ipc_adjustments?: Prisma.ipc_adjustmentsCreateNestedManyWithoutIpc_certificatesInput
   boq_versions: Prisma.boq_versionsCreateNestedOneWithoutIpc_certificatesInput
   app_users_ipc_certificates_certified_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_certified_byToapp_usersInput
+  app_users_ipc_certificates_paid_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_paid_byToapp_usersInput
   contracts: Prisma.contractsCreateNestedOneWithoutIpc_certificatesInput
   app_users_ipc_certificates_created_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_created_byToapp_usersInput
   projects: Prisma.projectsCreateNestedOneWithoutIpc_certificatesInput
@@ -2892,6 +3106,7 @@ export type ipc_certificatesUncheckedCreateWithoutIpc_linesInput = {
   certified_at?: Date | string | null
   locked_at?: Date | string | null
   paid_at?: Date | string | null
+  paid_by?: string | null
   notes?: string | null
   created_by?: string | null
   created_at?: Date | string
@@ -2960,6 +3175,7 @@ export type ipc_certificatesUpdateWithoutIpc_linesInput = {
   ipc_adjustments?: Prisma.ipc_adjustmentsUpdateManyWithoutIpc_certificatesNestedInput
   boq_versions?: Prisma.boq_versionsUpdateOneRequiredWithoutIpc_certificatesNestedInput
   app_users_ipc_certificates_certified_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_certified_byToapp_usersNestedInput
+  app_users_ipc_certificates_paid_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_paid_byToapp_usersNestedInput
   contracts?: Prisma.contractsUpdateOneRequiredWithoutIpc_certificatesNestedInput
   app_users_ipc_certificates_created_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_created_byToapp_usersNestedInput
   projects?: Prisma.projectsUpdateOneRequiredWithoutIpc_certificatesNestedInput
@@ -3010,6 +3226,7 @@ export type ipc_certificatesUncheckedUpdateWithoutIpc_linesInput = {
   certified_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   locked_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paid_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paid_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3062,6 +3279,7 @@ export type ipc_certificatesCreateWithoutIpc_materials_on_siteInput = {
   ipc_adjustments?: Prisma.ipc_adjustmentsCreateNestedManyWithoutIpc_certificatesInput
   boq_versions: Prisma.boq_versionsCreateNestedOneWithoutIpc_certificatesInput
   app_users_ipc_certificates_certified_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_certified_byToapp_usersInput
+  app_users_ipc_certificates_paid_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_paid_byToapp_usersInput
   contracts: Prisma.contractsCreateNestedOneWithoutIpc_certificatesInput
   app_users_ipc_certificates_created_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_created_byToapp_usersInput
   projects: Prisma.projectsCreateNestedOneWithoutIpc_certificatesInput
@@ -3112,6 +3330,7 @@ export type ipc_certificatesUncheckedCreateWithoutIpc_materials_on_siteInput = {
   certified_at?: Date | string | null
   locked_at?: Date | string | null
   paid_at?: Date | string | null
+  paid_by?: string | null
   notes?: string | null
   created_by?: string | null
   created_at?: Date | string
@@ -3180,6 +3399,7 @@ export type ipc_certificatesUpdateWithoutIpc_materials_on_siteInput = {
   ipc_adjustments?: Prisma.ipc_adjustmentsUpdateManyWithoutIpc_certificatesNestedInput
   boq_versions?: Prisma.boq_versionsUpdateOneRequiredWithoutIpc_certificatesNestedInput
   app_users_ipc_certificates_certified_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_certified_byToapp_usersNestedInput
+  app_users_ipc_certificates_paid_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_paid_byToapp_usersNestedInput
   contracts?: Prisma.contractsUpdateOneRequiredWithoutIpc_certificatesNestedInput
   app_users_ipc_certificates_created_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_created_byToapp_usersNestedInput
   projects?: Prisma.projectsUpdateOneRequiredWithoutIpc_certificatesNestedInput
@@ -3230,6 +3450,7 @@ export type ipc_certificatesUncheckedUpdateWithoutIpc_materials_on_siteInput = {
   certified_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   locked_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paid_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paid_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3282,6 +3503,7 @@ export type ipc_certificatesCreateWithoutPaymentsInput = {
   ipc_adjustments?: Prisma.ipc_adjustmentsCreateNestedManyWithoutIpc_certificatesInput
   boq_versions: Prisma.boq_versionsCreateNestedOneWithoutIpc_certificatesInput
   app_users_ipc_certificates_certified_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_certified_byToapp_usersInput
+  app_users_ipc_certificates_paid_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_paid_byToapp_usersInput
   contracts: Prisma.contractsCreateNestedOneWithoutIpc_certificatesInput
   app_users_ipc_certificates_created_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_created_byToapp_usersInput
   projects: Prisma.projectsCreateNestedOneWithoutIpc_certificatesInput
@@ -3332,6 +3554,7 @@ export type ipc_certificatesUncheckedCreateWithoutPaymentsInput = {
   certified_at?: Date | string | null
   locked_at?: Date | string | null
   paid_at?: Date | string | null
+  paid_by?: string | null
   notes?: string | null
   created_by?: string | null
   created_at?: Date | string
@@ -3400,6 +3623,7 @@ export type ipc_certificatesUpdateWithoutPaymentsInput = {
   ipc_adjustments?: Prisma.ipc_adjustmentsUpdateManyWithoutIpc_certificatesNestedInput
   boq_versions?: Prisma.boq_versionsUpdateOneRequiredWithoutIpc_certificatesNestedInput
   app_users_ipc_certificates_certified_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_certified_byToapp_usersNestedInput
+  app_users_ipc_certificates_paid_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_paid_byToapp_usersNestedInput
   contracts?: Prisma.contractsUpdateOneRequiredWithoutIpc_certificatesNestedInput
   app_users_ipc_certificates_created_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_created_byToapp_usersNestedInput
   projects?: Prisma.projectsUpdateOneRequiredWithoutIpc_certificatesNestedInput
@@ -3450,6 +3674,7 @@ export type ipc_certificatesUncheckedUpdateWithoutPaymentsInput = {
   certified_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   locked_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paid_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paid_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3502,6 +3727,7 @@ export type ipc_certificatesCreateWithoutProjectsInput = {
   ipc_adjustments?: Prisma.ipc_adjustmentsCreateNestedManyWithoutIpc_certificatesInput
   boq_versions: Prisma.boq_versionsCreateNestedOneWithoutIpc_certificatesInput
   app_users_ipc_certificates_certified_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_certified_byToapp_usersInput
+  app_users_ipc_certificates_paid_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_paid_byToapp_usersInput
   contracts: Prisma.contractsCreateNestedOneWithoutIpc_certificatesInput
   app_users_ipc_certificates_created_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_created_byToapp_usersInput
   app_users_ipc_certificates_recommended_byToapp_users?: Prisma.app_usersCreateNestedOneWithoutIpc_certificates_ipc_certificates_recommended_byToapp_usersInput
@@ -3551,6 +3777,7 @@ export type ipc_certificatesUncheckedCreateWithoutProjectsInput = {
   certified_at?: Date | string | null
   locked_at?: Date | string | null
   paid_at?: Date | string | null
+  paid_by?: string | null
   notes?: string | null
   created_by?: string | null
   created_at?: Date | string
@@ -3628,6 +3855,55 @@ export type ipc_certificatesCreateManyApp_users_ipc_certificates_certified_byToa
   certified_at?: Date | string | null
   locked_at?: Date | string | null
   paid_at?: Date | string | null
+  paid_by?: string | null
+  notes?: string | null
+  created_by?: string | null
+  created_at?: Date | string
+  updated_at?: Date | string
+  row_version?: bigint | number
+}
+
+export type ipc_certificatesCreateManyApp_users_ipc_certificates_paid_byToapp_usersInput = {
+  id?: string
+  project_id: string
+  contract_id: string
+  boq_version_id: string
+  ipc_number: number
+  certificate_reference?: string | null
+  period_start: Date | string
+  period_end: Date | string
+  status?: $Enums.ipc_status
+  currency?: string
+  calculation_version?: string | null
+  rule_snapshot?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  calculation_hash?: string | null
+  previous_work_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_work_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_work_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  previous_mos_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_mos_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_mos_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_additions?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_deductions?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_retention?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_retention?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_advance_recovery?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_advance_recovery?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_price_adjustment?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_price_adjustment?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_withholding_tax?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_vat?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_gross_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  net_current_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_net_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  submitted_by?: string | null
+  submitted_at?: Date | string | null
+  recommended_by?: string | null
+  recommended_at?: Date | string | null
+  certified_by?: string | null
+  certified_at?: Date | string | null
+  locked_at?: Date | string | null
+  paid_at?: Date | string | null
   notes?: string | null
   created_by?: string | null
   created_at?: Date | string
@@ -3676,6 +3952,7 @@ export type ipc_certificatesCreateManyApp_users_ipc_certificates_created_byToapp
   certified_at?: Date | string | null
   locked_at?: Date | string | null
   paid_at?: Date | string | null
+  paid_by?: string | null
   notes?: string | null
   created_at?: Date | string
   updated_at?: Date | string
@@ -3722,6 +3999,7 @@ export type ipc_certificatesCreateManyApp_users_ipc_certificates_recommended_byT
   certified_at?: Date | string | null
   locked_at?: Date | string | null
   paid_at?: Date | string | null
+  paid_by?: string | null
   notes?: string | null
   created_by?: string | null
   created_at?: Date | string
@@ -3769,6 +4047,7 @@ export type ipc_certificatesCreateManyApp_users_ipc_certificates_submitted_byToa
   certified_at?: Date | string | null
   locked_at?: Date | string | null
   paid_at?: Date | string | null
+  paid_by?: string | null
   notes?: string | null
   created_by?: string | null
   created_at?: Date | string
@@ -3817,6 +4096,7 @@ export type ipc_certificatesUpdateWithoutApp_users_ipc_certificates_certified_by
   row_version?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   ipc_adjustments?: Prisma.ipc_adjustmentsUpdateManyWithoutIpc_certificatesNestedInput
   boq_versions?: Prisma.boq_versionsUpdateOneRequiredWithoutIpc_certificatesNestedInput
+  app_users_ipc_certificates_paid_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_paid_byToapp_usersNestedInput
   contracts?: Prisma.contractsUpdateOneRequiredWithoutIpc_certificatesNestedInput
   app_users_ipc_certificates_created_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_created_byToapp_usersNestedInput
   projects?: Prisma.projectsUpdateOneRequiredWithoutIpc_certificatesNestedInput
@@ -3867,6 +4147,7 @@ export type ipc_certificatesUncheckedUpdateWithoutApp_users_ipc_certificates_cer
   certified_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   locked_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paid_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paid_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3915,6 +4196,159 @@ export type ipc_certificatesUncheckedUpdateManyWithoutApp_users_ipc_certificates
   submitted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   recommended_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recommended_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  certified_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  locked_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paid_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paid_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  row_version?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+}
+
+export type ipc_certificatesUpdateWithoutApp_users_ipc_certificates_paid_byToapp_usersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  ipc_number?: Prisma.IntFieldUpdateOperationsInput | number
+  certificate_reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  period_start?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  period_end?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.Enumipc_statusFieldUpdateOperationsInput | $Enums.ipc_status
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  calculation_version?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rule_snapshot?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  calculation_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  previous_work_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_work_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_work_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  previous_mos_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_mos_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_mos_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_additions?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_deductions?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_retention?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_retention?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_advance_recovery?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_advance_recovery?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_price_adjustment?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_price_adjustment?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_withholding_tax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_vat?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_gross_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  net_current_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_net_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  submitted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recommended_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  certified_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  locked_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paid_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  row_version?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  ipc_adjustments?: Prisma.ipc_adjustmentsUpdateManyWithoutIpc_certificatesNestedInput
+  boq_versions?: Prisma.boq_versionsUpdateOneRequiredWithoutIpc_certificatesNestedInput
+  app_users_ipc_certificates_certified_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_certified_byToapp_usersNestedInput
+  contracts?: Prisma.contractsUpdateOneRequiredWithoutIpc_certificatesNestedInput
+  app_users_ipc_certificates_created_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_created_byToapp_usersNestedInput
+  projects?: Prisma.projectsUpdateOneRequiredWithoutIpc_certificatesNestedInput
+  app_users_ipc_certificates_recommended_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_recommended_byToapp_usersNestedInput
+  app_users_ipc_certificates_submitted_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_submitted_byToapp_usersNestedInput
+  ipc_lines?: Prisma.ipc_linesUpdateManyWithoutIpc_certificatesNestedInput
+  ipc_materials_on_site?: Prisma.ipc_materials_on_siteUpdateManyWithoutIpc_certificatesNestedInput
+  payments?: Prisma.paymentsUpdateManyWithoutIpc_certificatesNestedInput
+}
+
+export type ipc_certificatesUncheckedUpdateWithoutApp_users_ipc_certificates_paid_byToapp_usersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  project_id?: Prisma.StringFieldUpdateOperationsInput | string
+  contract_id?: Prisma.StringFieldUpdateOperationsInput | string
+  boq_version_id?: Prisma.StringFieldUpdateOperationsInput | string
+  ipc_number?: Prisma.IntFieldUpdateOperationsInput | number
+  certificate_reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  period_start?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  period_end?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.Enumipc_statusFieldUpdateOperationsInput | $Enums.ipc_status
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  calculation_version?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rule_snapshot?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  calculation_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  previous_work_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_work_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_work_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  previous_mos_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_mos_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_mos_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_additions?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_deductions?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_retention?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_retention?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_advance_recovery?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_advance_recovery?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_price_adjustment?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_price_adjustment?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_withholding_tax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_vat?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_gross_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  net_current_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_net_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  submitted_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submitted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recommended_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recommended_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  certified_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  certified_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  locked_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paid_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  row_version?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  ipc_adjustments?: Prisma.ipc_adjustmentsUncheckedUpdateManyWithoutIpc_certificatesNestedInput
+  ipc_lines?: Prisma.ipc_linesUncheckedUpdateManyWithoutIpc_certificatesNestedInput
+  ipc_materials_on_site?: Prisma.ipc_materials_on_siteUncheckedUpdateManyWithoutIpc_certificatesNestedInput
+  payments?: Prisma.paymentsUncheckedUpdateManyWithoutIpc_certificatesNestedInput
+}
+
+export type ipc_certificatesUncheckedUpdateManyWithoutApp_users_ipc_certificates_paid_byToapp_usersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  project_id?: Prisma.StringFieldUpdateOperationsInput | string
+  contract_id?: Prisma.StringFieldUpdateOperationsInput | string
+  boq_version_id?: Prisma.StringFieldUpdateOperationsInput | string
+  ipc_number?: Prisma.IntFieldUpdateOperationsInput | number
+  certificate_reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  period_start?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  period_end?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.Enumipc_statusFieldUpdateOperationsInput | $Enums.ipc_status
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  calculation_version?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rule_snapshot?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  calculation_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  previous_work_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_work_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_work_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  previous_mos_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_mos_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_mos_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_additions?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_deductions?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_retention?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_retention?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_advance_recovery?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_advance_recovery?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_price_adjustment?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_price_adjustment?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_withholding_tax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_vat?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  current_gross_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  net_current_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cumulative_net_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  submitted_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submitted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recommended_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recommended_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  certified_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   certified_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   locked_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paid_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3967,6 +4401,7 @@ export type ipc_certificatesUpdateWithoutApp_users_ipc_certificates_created_byTo
   ipc_adjustments?: Prisma.ipc_adjustmentsUpdateManyWithoutIpc_certificatesNestedInput
   boq_versions?: Prisma.boq_versionsUpdateOneRequiredWithoutIpc_certificatesNestedInput
   app_users_ipc_certificates_certified_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_certified_byToapp_usersNestedInput
+  app_users_ipc_certificates_paid_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_paid_byToapp_usersNestedInput
   contracts?: Prisma.contractsUpdateOneRequiredWithoutIpc_certificatesNestedInput
   projects?: Prisma.projectsUpdateOneRequiredWithoutIpc_certificatesNestedInput
   app_users_ipc_certificates_recommended_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_recommended_byToapp_usersNestedInput
@@ -4017,6 +4452,7 @@ export type ipc_certificatesUncheckedUpdateWithoutApp_users_ipc_certificates_cre
   certified_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   locked_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paid_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paid_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -4068,6 +4504,7 @@ export type ipc_certificatesUncheckedUpdateManyWithoutApp_users_ipc_certificates
   certified_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   locked_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paid_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paid_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -4116,6 +4553,7 @@ export type ipc_certificatesUpdateWithoutApp_users_ipc_certificates_recommended_
   ipc_adjustments?: Prisma.ipc_adjustmentsUpdateManyWithoutIpc_certificatesNestedInput
   boq_versions?: Prisma.boq_versionsUpdateOneRequiredWithoutIpc_certificatesNestedInput
   app_users_ipc_certificates_certified_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_certified_byToapp_usersNestedInput
+  app_users_ipc_certificates_paid_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_paid_byToapp_usersNestedInput
   contracts?: Prisma.contractsUpdateOneRequiredWithoutIpc_certificatesNestedInput
   app_users_ipc_certificates_created_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_created_byToapp_usersNestedInput
   projects?: Prisma.projectsUpdateOneRequiredWithoutIpc_certificatesNestedInput
@@ -4165,6 +4603,7 @@ export type ipc_certificatesUncheckedUpdateWithoutApp_users_ipc_certificates_rec
   certified_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   locked_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paid_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paid_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -4216,6 +4655,7 @@ export type ipc_certificatesUncheckedUpdateManyWithoutApp_users_ipc_certificates
   certified_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   locked_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paid_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paid_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -4265,6 +4705,7 @@ export type ipc_certificatesUpdateWithoutApp_users_ipc_certificates_submitted_by
   ipc_adjustments?: Prisma.ipc_adjustmentsUpdateManyWithoutIpc_certificatesNestedInput
   boq_versions?: Prisma.boq_versionsUpdateOneRequiredWithoutIpc_certificatesNestedInput
   app_users_ipc_certificates_certified_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_certified_byToapp_usersNestedInput
+  app_users_ipc_certificates_paid_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_paid_byToapp_usersNestedInput
   contracts?: Prisma.contractsUpdateOneRequiredWithoutIpc_certificatesNestedInput
   app_users_ipc_certificates_created_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_created_byToapp_usersNestedInput
   projects?: Prisma.projectsUpdateOneRequiredWithoutIpc_certificatesNestedInput
@@ -4314,6 +4755,7 @@ export type ipc_certificatesUncheckedUpdateWithoutApp_users_ipc_certificates_sub
   certified_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   locked_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paid_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paid_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -4365,6 +4807,7 @@ export type ipc_certificatesUncheckedUpdateManyWithoutApp_users_ipc_certificates
   certified_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   locked_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paid_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paid_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -4412,6 +4855,7 @@ export type ipc_certificatesCreateManyBoq_versionsInput = {
   certified_at?: Date | string | null
   locked_at?: Date | string | null
   paid_at?: Date | string | null
+  paid_by?: string | null
   notes?: string | null
   created_by?: string | null
   created_at?: Date | string
@@ -4460,6 +4904,7 @@ export type ipc_certificatesUpdateWithoutBoq_versionsInput = {
   row_version?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   ipc_adjustments?: Prisma.ipc_adjustmentsUpdateManyWithoutIpc_certificatesNestedInput
   app_users_ipc_certificates_certified_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_certified_byToapp_usersNestedInput
+  app_users_ipc_certificates_paid_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_paid_byToapp_usersNestedInput
   contracts?: Prisma.contractsUpdateOneRequiredWithoutIpc_certificatesNestedInput
   app_users_ipc_certificates_created_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_created_byToapp_usersNestedInput
   projects?: Prisma.projectsUpdateOneRequiredWithoutIpc_certificatesNestedInput
@@ -4510,6 +4955,7 @@ export type ipc_certificatesUncheckedUpdateWithoutBoq_versionsInput = {
   certified_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   locked_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paid_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paid_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -4561,6 +5007,7 @@ export type ipc_certificatesUncheckedUpdateManyWithoutBoq_versionsInput = {
   certified_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   locked_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paid_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paid_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -4608,6 +5055,7 @@ export type ipc_certificatesCreateManyContractsInput = {
   certified_at?: Date | string | null
   locked_at?: Date | string | null
   paid_at?: Date | string | null
+  paid_by?: string | null
   notes?: string | null
   created_by?: string | null
   created_at?: Date | string
@@ -4657,6 +5105,7 @@ export type ipc_certificatesUpdateWithoutContractsInput = {
   ipc_adjustments?: Prisma.ipc_adjustmentsUpdateManyWithoutIpc_certificatesNestedInput
   boq_versions?: Prisma.boq_versionsUpdateOneRequiredWithoutIpc_certificatesNestedInput
   app_users_ipc_certificates_certified_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_certified_byToapp_usersNestedInput
+  app_users_ipc_certificates_paid_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_paid_byToapp_usersNestedInput
   app_users_ipc_certificates_created_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_created_byToapp_usersNestedInput
   projects?: Prisma.projectsUpdateOneRequiredWithoutIpc_certificatesNestedInput
   app_users_ipc_certificates_recommended_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_recommended_byToapp_usersNestedInput
@@ -4706,6 +5155,7 @@ export type ipc_certificatesUncheckedUpdateWithoutContractsInput = {
   certified_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   locked_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paid_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paid_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -4757,6 +5207,7 @@ export type ipc_certificatesUncheckedUpdateManyWithoutContractsInput = {
   certified_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   locked_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paid_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paid_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -4804,6 +5255,7 @@ export type ipc_certificatesCreateManyProjectsInput = {
   certified_at?: Date | string | null
   locked_at?: Date | string | null
   paid_at?: Date | string | null
+  paid_by?: string | null
   notes?: string | null
   created_by?: string | null
   created_at?: Date | string
@@ -4853,6 +5305,7 @@ export type ipc_certificatesUpdateWithoutProjectsInput = {
   ipc_adjustments?: Prisma.ipc_adjustmentsUpdateManyWithoutIpc_certificatesNestedInput
   boq_versions?: Prisma.boq_versionsUpdateOneRequiredWithoutIpc_certificatesNestedInput
   app_users_ipc_certificates_certified_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_certified_byToapp_usersNestedInput
+  app_users_ipc_certificates_paid_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_paid_byToapp_usersNestedInput
   contracts?: Prisma.contractsUpdateOneRequiredWithoutIpc_certificatesNestedInput
   app_users_ipc_certificates_created_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_created_byToapp_usersNestedInput
   app_users_ipc_certificates_recommended_byToapp_users?: Prisma.app_usersUpdateOneWithoutIpc_certificates_ipc_certificates_recommended_byToapp_usersNestedInput
@@ -4902,6 +5355,7 @@ export type ipc_certificatesUncheckedUpdateWithoutProjectsInput = {
   certified_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   locked_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paid_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paid_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -4953,6 +5407,7 @@ export type ipc_certificatesUncheckedUpdateManyWithoutProjectsInput = {
   certified_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   locked_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paid_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paid_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -5059,6 +5514,7 @@ export type ipc_certificatesSelect<ExtArgs extends runtime.Types.Extensions.Inte
   certified_at?: boolean
   locked_at?: boolean
   paid_at?: boolean
+  paid_by?: boolean
   notes?: boolean
   created_by?: boolean
   created_at?: boolean
@@ -5067,6 +5523,7 @@ export type ipc_certificatesSelect<ExtArgs extends runtime.Types.Extensions.Inte
   ipc_adjustments?: boolean | Prisma.ipc_certificates$ipc_adjustmentsArgs<ExtArgs>
   boq_versions?: boolean | Prisma.boq_versionsDefaultArgs<ExtArgs>
   app_users_ipc_certificates_certified_byToapp_users?: boolean | Prisma.ipc_certificates$app_users_ipc_certificates_certified_byToapp_usersArgs<ExtArgs>
+  app_users_ipc_certificates_paid_byToapp_users?: boolean | Prisma.ipc_certificates$app_users_ipc_certificates_paid_byToapp_usersArgs<ExtArgs>
   contracts?: boolean | Prisma.contractsDefaultArgs<ExtArgs>
   app_users_ipc_certificates_created_byToapp_users?: boolean | Prisma.ipc_certificates$app_users_ipc_certificates_created_byToapp_usersArgs<ExtArgs>
   projects?: boolean | Prisma.projectsDefaultArgs<ExtArgs>
@@ -5119,6 +5576,7 @@ export type ipc_certificatesSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   certified_at?: boolean
   locked_at?: boolean
   paid_at?: boolean
+  paid_by?: boolean
   notes?: boolean
   created_by?: boolean
   created_at?: boolean
@@ -5126,6 +5584,7 @@ export type ipc_certificatesSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   row_version?: boolean
   boq_versions?: boolean | Prisma.boq_versionsDefaultArgs<ExtArgs>
   app_users_ipc_certificates_certified_byToapp_users?: boolean | Prisma.ipc_certificates$app_users_ipc_certificates_certified_byToapp_usersArgs<ExtArgs>
+  app_users_ipc_certificates_paid_byToapp_users?: boolean | Prisma.ipc_certificates$app_users_ipc_certificates_paid_byToapp_usersArgs<ExtArgs>
   contracts?: boolean | Prisma.contractsDefaultArgs<ExtArgs>
   app_users_ipc_certificates_created_byToapp_users?: boolean | Prisma.ipc_certificates$app_users_ipc_certificates_created_byToapp_usersArgs<ExtArgs>
   projects?: boolean | Prisma.projectsDefaultArgs<ExtArgs>
@@ -5174,6 +5633,7 @@ export type ipc_certificatesSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   certified_at?: boolean
   locked_at?: boolean
   paid_at?: boolean
+  paid_by?: boolean
   notes?: boolean
   created_by?: boolean
   created_at?: boolean
@@ -5181,6 +5641,7 @@ export type ipc_certificatesSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   row_version?: boolean
   boq_versions?: boolean | Prisma.boq_versionsDefaultArgs<ExtArgs>
   app_users_ipc_certificates_certified_byToapp_users?: boolean | Prisma.ipc_certificates$app_users_ipc_certificates_certified_byToapp_usersArgs<ExtArgs>
+  app_users_ipc_certificates_paid_byToapp_users?: boolean | Prisma.ipc_certificates$app_users_ipc_certificates_paid_byToapp_usersArgs<ExtArgs>
   contracts?: boolean | Prisma.contractsDefaultArgs<ExtArgs>
   app_users_ipc_certificates_created_byToapp_users?: boolean | Prisma.ipc_certificates$app_users_ipc_certificates_created_byToapp_usersArgs<ExtArgs>
   projects?: boolean | Prisma.projectsDefaultArgs<ExtArgs>
@@ -5229,6 +5690,7 @@ export type ipc_certificatesSelectScalar = {
   certified_at?: boolean
   locked_at?: boolean
   paid_at?: boolean
+  paid_by?: boolean
   notes?: boolean
   created_by?: boolean
   created_at?: boolean
@@ -5236,11 +5698,12 @@ export type ipc_certificatesSelectScalar = {
   row_version?: boolean
 }
 
-export type ipc_certificatesOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "project_id" | "contract_id" | "boq_version_id" | "ipc_number" | "certificate_reference" | "period_start" | "period_end" | "status" | "currency" | "calculation_version" | "rule_snapshot" | "calculation_hash" | "previous_work_amount" | "current_work_amount" | "cumulative_work_amount" | "previous_mos_amount" | "current_mos_amount" | "cumulative_mos_amount" | "current_additions" | "current_deductions" | "current_retention" | "cumulative_retention" | "current_advance_recovery" | "cumulative_advance_recovery" | "current_price_adjustment" | "cumulative_price_adjustment" | "current_withholding_tax" | "current_vat" | "current_gross_amount" | "net_current_amount" | "cumulative_net_amount" | "submitted_by" | "submitted_at" | "recommended_by" | "recommended_at" | "certified_by" | "certified_at" | "locked_at" | "paid_at" | "notes" | "created_by" | "created_at" | "updated_at" | "row_version", ExtArgs["result"]["ipc_certificates"]>
+export type ipc_certificatesOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "project_id" | "contract_id" | "boq_version_id" | "ipc_number" | "certificate_reference" | "period_start" | "period_end" | "status" | "currency" | "calculation_version" | "rule_snapshot" | "calculation_hash" | "previous_work_amount" | "current_work_amount" | "cumulative_work_amount" | "previous_mos_amount" | "current_mos_amount" | "cumulative_mos_amount" | "current_additions" | "current_deductions" | "current_retention" | "cumulative_retention" | "current_advance_recovery" | "cumulative_advance_recovery" | "current_price_adjustment" | "cumulative_price_adjustment" | "current_withholding_tax" | "current_vat" | "current_gross_amount" | "net_current_amount" | "cumulative_net_amount" | "submitted_by" | "submitted_at" | "recommended_by" | "recommended_at" | "certified_by" | "certified_at" | "locked_at" | "paid_at" | "paid_by" | "notes" | "created_by" | "created_at" | "updated_at" | "row_version", ExtArgs["result"]["ipc_certificates"]>
 export type ipc_certificatesInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   ipc_adjustments?: boolean | Prisma.ipc_certificates$ipc_adjustmentsArgs<ExtArgs>
   boq_versions?: boolean | Prisma.boq_versionsDefaultArgs<ExtArgs>
   app_users_ipc_certificates_certified_byToapp_users?: boolean | Prisma.ipc_certificates$app_users_ipc_certificates_certified_byToapp_usersArgs<ExtArgs>
+  app_users_ipc_certificates_paid_byToapp_users?: boolean | Prisma.ipc_certificates$app_users_ipc_certificates_paid_byToapp_usersArgs<ExtArgs>
   contracts?: boolean | Prisma.contractsDefaultArgs<ExtArgs>
   app_users_ipc_certificates_created_byToapp_users?: boolean | Prisma.ipc_certificates$app_users_ipc_certificates_created_byToapp_usersArgs<ExtArgs>
   projects?: boolean | Prisma.projectsDefaultArgs<ExtArgs>
@@ -5254,6 +5717,7 @@ export type ipc_certificatesInclude<ExtArgs extends runtime.Types.Extensions.Int
 export type ipc_certificatesIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   boq_versions?: boolean | Prisma.boq_versionsDefaultArgs<ExtArgs>
   app_users_ipc_certificates_certified_byToapp_users?: boolean | Prisma.ipc_certificates$app_users_ipc_certificates_certified_byToapp_usersArgs<ExtArgs>
+  app_users_ipc_certificates_paid_byToapp_users?: boolean | Prisma.ipc_certificates$app_users_ipc_certificates_paid_byToapp_usersArgs<ExtArgs>
   contracts?: boolean | Prisma.contractsDefaultArgs<ExtArgs>
   app_users_ipc_certificates_created_byToapp_users?: boolean | Prisma.ipc_certificates$app_users_ipc_certificates_created_byToapp_usersArgs<ExtArgs>
   projects?: boolean | Prisma.projectsDefaultArgs<ExtArgs>
@@ -5263,6 +5727,7 @@ export type ipc_certificatesIncludeCreateManyAndReturn<ExtArgs extends runtime.T
 export type ipc_certificatesIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   boq_versions?: boolean | Prisma.boq_versionsDefaultArgs<ExtArgs>
   app_users_ipc_certificates_certified_byToapp_users?: boolean | Prisma.ipc_certificates$app_users_ipc_certificates_certified_byToapp_usersArgs<ExtArgs>
+  app_users_ipc_certificates_paid_byToapp_users?: boolean | Prisma.ipc_certificates$app_users_ipc_certificates_paid_byToapp_usersArgs<ExtArgs>
   contracts?: boolean | Prisma.contractsDefaultArgs<ExtArgs>
   app_users_ipc_certificates_created_byToapp_users?: boolean | Prisma.ipc_certificates$app_users_ipc_certificates_created_byToapp_usersArgs<ExtArgs>
   projects?: boolean | Prisma.projectsDefaultArgs<ExtArgs>
@@ -5276,6 +5741,7 @@ export type $ipc_certificatesPayload<ExtArgs extends runtime.Types.Extensions.In
     ipc_adjustments: Prisma.$ipc_adjustmentsPayload<ExtArgs>[]
     boq_versions: Prisma.$boq_versionsPayload<ExtArgs>
     app_users_ipc_certificates_certified_byToapp_users: Prisma.$app_usersPayload<ExtArgs> | null
+    app_users_ipc_certificates_paid_byToapp_users: Prisma.$app_usersPayload<ExtArgs> | null
     contracts: Prisma.$contractsPayload<ExtArgs>
     app_users_ipc_certificates_created_byToapp_users: Prisma.$app_usersPayload<ExtArgs> | null
     projects: Prisma.$projectsPayload<ExtArgs>
@@ -5326,6 +5792,7 @@ export type $ipc_certificatesPayload<ExtArgs extends runtime.Types.Extensions.In
     certified_at: Date | null
     locked_at: Date | null
     paid_at: Date | null
+    paid_by: string | null
     notes: string | null
     created_by: string | null
     created_at: Date
@@ -5728,6 +6195,7 @@ export interface Prisma__ipc_certificatesClient<T, Null = never, ExtArgs extends
   ipc_adjustments<T extends Prisma.ipc_certificates$ipc_adjustmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ipc_certificates$ipc_adjustmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ipc_adjustmentsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   boq_versions<T extends Prisma.boq_versionsDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.boq_versionsDefaultArgs<ExtArgs>>): Prisma.Prisma__boq_versionsClient<runtime.Types.Result.GetResult<Prisma.$boq_versionsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   app_users_ipc_certificates_certified_byToapp_users<T extends Prisma.ipc_certificates$app_users_ipc_certificates_certified_byToapp_usersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ipc_certificates$app_users_ipc_certificates_certified_byToapp_usersArgs<ExtArgs>>): Prisma.Prisma__app_usersClient<runtime.Types.Result.GetResult<Prisma.$app_usersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  app_users_ipc_certificates_paid_byToapp_users<T extends Prisma.ipc_certificates$app_users_ipc_certificates_paid_byToapp_usersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ipc_certificates$app_users_ipc_certificates_paid_byToapp_usersArgs<ExtArgs>>): Prisma.Prisma__app_usersClient<runtime.Types.Result.GetResult<Prisma.$app_usersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   contracts<T extends Prisma.contractsDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.contractsDefaultArgs<ExtArgs>>): Prisma.Prisma__contractsClient<runtime.Types.Result.GetResult<Prisma.$contractsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   app_users_ipc_certificates_created_byToapp_users<T extends Prisma.ipc_certificates$app_users_ipc_certificates_created_byToapp_usersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ipc_certificates$app_users_ipc_certificates_created_byToapp_usersArgs<ExtArgs>>): Prisma.Prisma__app_usersClient<runtime.Types.Result.GetResult<Prisma.$app_usersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   projects<T extends Prisma.projectsDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.projectsDefaultArgs<ExtArgs>>): Prisma.Prisma__projectsClient<runtime.Types.Result.GetResult<Prisma.$projectsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
@@ -5805,6 +6273,7 @@ export interface ipc_certificatesFieldRefs {
   readonly certified_at: Prisma.FieldRef<"ipc_certificates", 'DateTime'>
   readonly locked_at: Prisma.FieldRef<"ipc_certificates", 'DateTime'>
   readonly paid_at: Prisma.FieldRef<"ipc_certificates", 'DateTime'>
+  readonly paid_by: Prisma.FieldRef<"ipc_certificates", 'String'>
   readonly notes: Prisma.FieldRef<"ipc_certificates", 'String'>
   readonly created_by: Prisma.FieldRef<"ipc_certificates", 'String'>
   readonly created_at: Prisma.FieldRef<"ipc_certificates", 'DateTime'>
@@ -6238,6 +6707,25 @@ export type ipc_certificates$ipc_adjustmentsArgs<ExtArgs extends runtime.Types.E
  * ipc_certificates.app_users_ipc_certificates_certified_byToapp_users
  */
 export type ipc_certificates$app_users_ipc_certificates_certified_byToapp_usersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the app_users
+   */
+  select?: Prisma.app_usersSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the app_users
+   */
+  omit?: Prisma.app_usersOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.app_usersInclude<ExtArgs> | null
+  where?: Prisma.app_usersWhereInput
+}
+
+/**
+ * ipc_certificates.app_users_ipc_certificates_paid_byToapp_users
+ */
+export type ipc_certificates$app_users_ipc_certificates_paid_byToapp_usersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the app_users
    */

@@ -952,6 +952,7 @@ export const Ipc_certificatesScalarFieldEnum = {
   certified_at: 'certified_at',
   locked_at: 'locked_at',
   paid_at: 'paid_at',
+  paid_by: 'paid_by',
   notes: 'notes',
   created_by: 'created_by',
   created_at: 'created_at',

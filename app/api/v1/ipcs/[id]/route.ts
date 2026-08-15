@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { redirect } from 'next/navigation';
 import type { ipc_status } from '@/lib/generated/prisma/client';
 import { db } from '@/lib/db';
-import { requireApiPermission, IPC_TARGET_PERMISSIONS } from '@/lib/server/session';
+import { requireApiPermission, IPC_TARGET_PERMISSIONS, assertSegregationOfDuty } from '@/lib/server/session';
 import { getProjectContext } from '@/lib/server/context';
 import { writeAudit } from '@/lib/audit';
 
@@ -51,6 +51,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     certified_by?: string;
     certified_at?: Date;
     paid_at?: Date;
+    paid_by?: string;
   } = { status: target };
 
   if (target === 'submitted') {
@@ -63,6 +64,14 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     data.certified_by = userId;
     data.certified_at = now;
   } else if (target === 'paid') {
+    const blocked = await assertSegregationOfDuty(
+      userId,
+      ipc.certified_by,
+      'The user who certified an IPC cannot also record its payment',
+      { tenantId, projectId, entityType: 'ipc_certificates', entityId: ipc.id, target }
+    );
+    if (blocked) return blocked;
+    data.paid_by = userId;
     data.paid_at = now;
   }
 
