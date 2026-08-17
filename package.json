@@ -9,7 +9,7 @@
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "db:migrate": "psql -h localhost -U postgres -d ecms -f drizzle/0000_mvp_schema.sql -f drizzle/0001_full_schema.sql -f drizzle/0002_seed.sql"
+    "db:migrate": "psql -h localhost -U postgres -d ecms -f db/migrations/0001_ecms_mvp_schema.sql -f db/migrations/0002_better_auth.sql -f db/migrations/0003_ecms_ipc_paid_by.sql"
   },
   "dependencies": {
     "@better-auth/prisma-adapter": "^1.6.27",
@@ -19,7 +19,6 @@
     "bcryptjs": "^3.0.3",
     "better-auth": "^1.6.27",
     "clsx": "^2.1.1",
-    "drizzle-orm": "^0.45.2",
     "next": "16.2.11",
     "next-auth": "^5.0.0-beta.32",
     "pg": "^8.23.0",
@@ -35,7 +34,6 @@
     "@types/pg": "^8.21.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "drizzle-kit": "^0.31.10",
     "eslint": "^9",
     "eslint-config-next": "16.2.11",
     "prisma": "^7.9.1",

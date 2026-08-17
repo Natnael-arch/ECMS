@@ -14,9 +14,10 @@ A modern, role-based web application tailored for the construction industry. Des
 
 ## Tech Stack
 
-- **Framework:** [Next.js 14/15](https://nextjs.org/) (App Router)
+- **Framework:** [Next.js 16](https://nextjs.org/) (App Router)
+- **Database:** [PostgreSQL](https://www.postgresql.org/) via [Prisma](https://www.prisma.io/) ORM
 - **Styling:** [Tailwind CSS](https://tailwindcss.com/) with a fully custom dark-mode design system
-- **Authentication:** [NextAuth.js v5 Beta](https://authjs.dev/)
+- **Authentication:** [Better Auth](https://www.better-auth.com/) with Prisma adapter
 - **Icons:** [Tabler Icons React](https://tabler.io/icons)
 - **Language:** TypeScript
 
@@ -30,6 +31,21 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+### Database Setup
+
+`db/migrations/` is the **single source of truth** for the database schema. Migrations run in numeric order via:
+
+```bash
+npm run db:migrate
+```
+
+This executes `psql` against the `ecms` database, applying:
+1. `0001_ecms_mvp_schema.sql` — core application tables
+2. `0002_better_auth.sql` — Better Auth tables
+3. `0003_ecms_ipc_paid_by.sql` — IPC paid_by column
+
+`prisma/schema.prisma` is kept in sync with these SQL files **manually** (not via `prisma migrate`). When you change the schema, update both the Prisma file and the corresponding SQL migration.
 
 ### Demo Accounts
 
