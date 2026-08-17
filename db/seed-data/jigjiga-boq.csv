@@ -1,0 +1,22 @@
+# PLACEHOLDER — Jigjiga Bypass Road BOQ
+# ============================================================
+# This file MUST be replaced with the real BOQ export before
+# the demo is final. The rows below are illustrative placeholders
+# covering typical road-project sections (earthworks, pavement,
+# drainage, structures). They do NOT represent real quantities
+# or rates from the Jigjiga Bypass Road contract.
+#
+# Format: item_number,source_code,description,unit,original_quantity,rate,section_code,section_title
+# ============================================================
+item_number,source_code,description,unit,original_quantity,rate,section_code,section_title
+1.1,S01,Clearing and grubbing,m2,45000,12.50,SEC-1,General Earthworks
+1.2,S02,Excavation in ordinary soil,m3,85000,185.00,SEC-1,General Earthworks
+1.3,S03,Excavation in rock,m3,12000,950.00,SEC-1,General Earthworks
+1.4,S04,Embankment from borrow,m3,65000,210.00,SEC-1,General Earthworks
+2.1,P01,Sub-base course (CBR >= 80%),m3,18500,1450.00,SEC-2,Pavement Works
+2.2,P02,Base course (crushed stone),m3,14800,2100.00,SEC-2,Pavement Works
+2.3,P03,Asphalt concrete wearing course,m3,7400,5800.00,SEC-2,Pavement Works
+2.4,P04,Asphalt concrete binder course,m3,7400,5200.00,SEC-2,Pavement Works
+3.1,D01,Concrete box culvert (1.5m x 1.0m),m,320,28500.00,SEC-3,Drainage Structures
+3.2,D02,Side drains (trapezoidal),m,2800,4200.00,SEC-3,Drainage Structures
+3.3,D03,Cross-cast pipes dia 600mm,m,180,8900.00,SEC-3,Drainage Structures

@@ -1,0 +1,18 @@
+{
+  "_comment": "PLACEHOLDER — Jigjiga Bypass Road IPC #1. This file MUST be replaced with the real IPC #1 figures before the demo is final. The quantities below are illustrative placeholders and do NOT represent actual measured work.",
+  "period_start": "2025-07-01",
+  "period_end": "2025-12-31",
+  "items": [
+    { "item_number": "1.1", "current_quantity": 45000 },
+    { "item_number": "1.2", "current_quantity": 82000 },
+    { "item_number": "1.3", "current_quantity": 9500 },
+    { "item_number": "1.4", "current_quantity": 58000 },
+    { "item_number": "2.1", "current_quantity": 15000 },
+    { "item_number": "2.2", "current_quantity": 11200 },
+    { "item_number": "2.3", "current_quantity": 0 },
+    { "item_number": "2.4", "current_quantity": 0 },
+    { "item_number": "3.1", "current_quantity": 180 },
+    { "item_number": "3.2", "current_quantity": 1400 },
+    { "item_number": "3.3", "current_quantity": 85 }
+  ]
+}

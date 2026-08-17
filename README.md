@@ -47,6 +47,25 @@ This executes `psql` against the `ecms` database, applying:
 
 `prisma/schema.prisma` is kept in sync with these SQL files **manually** (not via `prisma migrate`). When you change the schema, update both the Prisma file and the corresponding SQL migration.
 
+### Seeding the Jigjiga Demo Project
+
+The primary demo dataset is the **Jigjiga Bypass Road** — a 6.93 km road contract (FIDIC unit-price, ERA employer, Yirgalem Construction contractor, ELDA/DAMRA engineer).
+
+```bash
+npm run db:seed:jigjiga
+```
+
+This creates: a tenant, the project, three organizations, a contract with contract_parties, an approved BOQ (from CSV), contract_rules for advance recovery and VAT withholding, and a stub IPC #1 draft.
+
+**Two placeholder files must be replaced with real data before the demo is final:**
+
+| File | Format | What to supply |
+|------|--------|---------------|
+| `db/seed-data/jigjiga-boq.csv` | `item_number,source_code,description,unit,original_quantity,rate,section_code,section_title` | Real BOQ line items, quantities, and rates |
+| `db/seed-data/jigjiga-ipc1.json` | `{ period_start, period_end, items: [{ item_number, current_quantity }] }` | Real IPC #1 accepted quantities per BOQ item |
+
+The seed script is idempotent — safe to re-run after replacing the data files. After seeding, use `POST /api/v1/ipcs/:id/calculate` to compute IPC #1 figures from the measurement data.
+
 ### Demo Accounts
 
 The application uses dummy data configured in `lib/data.ts`. You can log in using any of the following credentials without a database:
