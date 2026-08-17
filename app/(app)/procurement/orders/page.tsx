@@ -3,7 +3,7 @@ import { Table, THead, TH, TBody, TR, TD } from '@/components/ui/Table';
 import { StatusPill } from '@/components/ui/StatusPill';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { SectionHeader } from '@/components/ui/SectionHeader';
-import { IconFileOrder } from '@tabler/icons-react';
+import { IconClipboardList } from '@tabler/icons-react';
 import { db } from '@/lib/db';
 import { requireAppUser } from '@/lib/server/session';
 import { getProjectContext } from '@/lib/server/context';
@@ -28,7 +28,7 @@ export default async function PurchaseOrdersPage() {
   return (
     <div className="flex flex-col gap-5">
       <SectionHeader title="Purchase Orders" />
-      <Card icon={<IconFileOrder size={18} />}>
+      <Card icon={<IconClipboardList size={18} />}>
         {orders.length === 0 ? (
           <EmptyState title="No purchase orders" message="Purchase orders issued to suppliers appear here." />
         ) : (
