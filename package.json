@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "db:migrate": "psql -h localhost -U postgres -d ecms -f drizzle/0000_mvp_schema.sql -f drizzle/0001_full_schema.sql -f drizzle/0002_seed.sql"
   },
   "dependencies": {
@@ -39,6 +41,7 @@
     "prisma": "^7.9.1",
     "tailwindcss": "^4",
     "tsx": "^4.23.12",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.10"
   }
 }
