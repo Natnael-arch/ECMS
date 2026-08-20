@@ -153,7 +153,8 @@ export const ModelName = {
   workflow_definition_steps: 'workflow_definition_steps',
   workflow_definitions: 'workflow_definitions',
   workflow_instances: 'workflow_instances',
-  workflow_tasks: 'workflow_tasks'
+  workflow_tasks: 'workflow_tasks',
+  idempotency_keys: 'idempotency_keys'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -2249,6 +2250,18 @@ export const Workflow_tasksScalarFieldEnum = {
 } as const
 
 export type Workflow_tasksScalarFieldEnum = (typeof Workflow_tasksScalarFieldEnum)[keyof typeof Workflow_tasksScalarFieldEnum]
+
+
+export const Idempotency_keysScalarFieldEnum = {
+  key: 'key',
+  status: 'status',
+  request_hash: 'request_hash',
+  response_data: 'response_data',
+  completed_at: 'completed_at',
+  created_at: 'created_at'
+} as const
+
+export type Idempotency_keysScalarFieldEnum = (typeof Idempotency_keysScalarFieldEnum)[keyof typeof Idempotency_keysScalarFieldEnum]
 
 
 export const SortOrder = {

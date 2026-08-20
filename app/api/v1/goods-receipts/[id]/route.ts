@@ -5,6 +5,7 @@ import { db } from '@/lib/db';
 import { requireApiPermission } from '@/lib/server/session';
 import { getProjectContext } from '@/lib/server/context';
 import { writeAudit } from '@/lib/audit';
+import { withErrorHandling } from '@/lib/api-handler';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,7 +25,7 @@ const TARGET_PERMISSIONS: Record<string, string> = {
   returned: 'goods.receive',
 };
 
-export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export const POST = withErrorHandling(async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const { tenantId, projectId, userId } = await getProjectContext();
   if (!projectId) return NextResponse.json({ error: 'No project selected' }, { status: 400 });
@@ -94,6 +95,33 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
   await db.goods_receipts.update({ where: { id }, data });
 
+  if (target === 'accepted') {
+    const lines = await db.goods_receipt_lines.findMany({
+      where: { goods_receipt_id: id, accepted_quantity: { gt: 0 } },
+      include: { purchase_order_lines: { select: { unit_price: true } } },
+    });
+
+    if (lines.length > 0) {
+      await db.stock_ledger_entries.createMany({
+        data: lines.map((line) => ({
+          project_id: receipt.project_id,
+          warehouse_id: receipt.warehouse_id,
+          inventory_item_id: line.inventory_item_id,
+          entry_type: 'receipt',
+          quantity_delta: line.accepted_quantity,
+          unit_cost: line.purchase_order_lines.unit_price,
+          value_delta: Math.round(Number(line.accepted_quantity) * Number(line.purchase_order_lines.unit_price) * 10000) / 10000,
+          source_type: 'goods_receipt',
+          source_id: receipt.id,
+          source_line_id: line.id,
+          occurred_at: receipt.accepted_at || now,
+          posted_by: userId,
+          notes: `Automatically posted from accepted GRN ${receipt.receipt_number}`,
+        })),
+      });
+    }
+  }
+
   await writeAudit({
     tenantId,
     projectId,
@@ -106,4 +134,4 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   });
 
   redirect('/procurement/receipts');
-}
+});

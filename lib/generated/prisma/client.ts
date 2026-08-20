@@ -583,3 +583,8 @@ export type workflow_instances = Prisma.workflow_instancesModel
  * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
  */
 export type workflow_tasks = Prisma.workflow_tasksModel
+/**
+ * Model idempotency_keys
+ * 
+ */
+export type idempotency_keys = Prisma.idempotency_keysModel

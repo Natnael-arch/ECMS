@@ -35,10 +35,10 @@ export default async function ContractsPage({ searchParams }: { searchParams: Pr
       <SectionHeader title="Contract Register" />
 
       <form method="GET" className="flex items-center gap-2">
-        <select name="project" className="rounded-lg border border-ecms-border bg-ecms-card px-3 py-1.5 text-sm text-ecms-text">
+        <select name="project" defaultValue={project ?? ''} className="rounded-lg border border-ecms-border bg-ecms-card px-3 py-1.5 text-sm text-ecms-text">
           <option value="">All projects</option>
           {projects.map((p) => (
-            <option key={p.id} value={p.id} selected={project === p.id}>{p.project_code}</option>
+            <option key={p.id} value={p.id}>{p.project_code}</option>
           ))}
         </select>
         <button type="submit" className="rounded-lg bg-ecms-elevated px-3 py-1.5 text-sm font-semibold text-ecms-text hover:bg-ecms-amber hover:text-ecms-navy">Filter</button>

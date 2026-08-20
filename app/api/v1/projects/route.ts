@@ -5,10 +5,11 @@ import { db } from '@/lib/db';
 import { requireApiPermission } from '@/lib/server/session';
 import { getProjectContext } from '@/lib/server/context';
 import { writeAudit } from '@/lib/audit';
+import { withErrorHandling } from '@/lib/api-handler';
 
 export const dynamic = 'force-dynamic';
 
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandling(async function POST(req: NextRequest) {
   const { tenantId, projectId, userId } = await getProjectContext();
   const auth = await requireApiPermission('project.create', projectId);
   if (auth instanceof NextResponse) return auth;
@@ -43,4 +44,4 @@ export async function POST(req: NextRequest) {
   });
 
   redirect('/projects');
-}
+});

@@ -4,10 +4,11 @@ import { db } from '@/lib/db';
 import { requireApiPermission } from '@/lib/server/session';
 import { getProjectContext } from '@/lib/server/context';
 import { writeAudit } from '@/lib/audit';
+import { withErrorHandling } from '@/lib/api-handler';
 
 export const dynamic = 'force-dynamic';
 
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandling(async function POST(req: NextRequest) {
   const { tenantId, projectId, userId } = await getProjectContext();
   if (!projectId) return NextResponse.json({ error: 'No project selected' }, { status: 400 });
   const auth = await requireApiPermission('measurement.create', projectId);
@@ -50,4 +51,4 @@ export async function POST(req: NextRequest) {
   });
 
   redirect('/field');
-}
+});

@@ -5,6 +5,8 @@ import { db } from '@/lib/db';
 import { requireApiPermission, assertSegregationOfDuty } from '@/lib/server/session';
 import { getProjectContext } from '@/lib/server/context';
 import { writeAudit } from '@/lib/audit';
+import { notifyProjectMembers } from '@/lib/notifications';
+import { withErrorHandling } from '@/lib/api-handler';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,7 +27,7 @@ const TARGET_PERMISSIONS: Record<string, string> = {
   returned: 'procurement.approve',
 };
 
-export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export const POST = withErrorHandling(async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const { tenantId, projectId, userId } = await getProjectContext();
   if (!projectId) return NextResponse.json({ error: 'No project selected' }, { status: 400 });
@@ -90,5 +92,14 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     after: { status: target },
   });
 
+  if (target === 'submitted') {
+    await notifyProjectMembers(
+      tenantId, projectId, 'procurement.approve',
+      'Requisition submitted for approval',
+      `Requisition ${requisition.requisition_number || id} has been submitted and requires approval.`,
+      'action_required', 'purchase_requisitions', requisition.id
+    );
+  }
+
   redirect('/procurement/requisitions');
-}
+});

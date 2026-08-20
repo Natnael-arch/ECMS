@@ -5,6 +5,7 @@ import { db } from '@/lib/db';
 import { requireApiPermission, assertSegregationOfDuty } from '@/lib/server/session';
 import { getProjectContext } from '@/lib/server/context';
 import { writeAudit } from '@/lib/audit';
+import { withErrorHandling } from '@/lib/api-handler';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,7 +25,7 @@ const TARGET_PERMISSIONS: Record<string, string> = {
   returned: 'inventory.issue',
 };
 
-export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export const POST = withErrorHandling(async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const { tenantId, projectId, userId } = await getProjectContext();
   if (!projectId) return NextResponse.json({ error: 'No project selected' }, { status: 400 });
@@ -78,33 +79,37 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     );
     if (blockedIssuer) return blockedIssuer;
 
-    if (issue.recipient_name && issue.recipient_name === auth.appUser.display_name) {
-      await writeAudit({
-        tenantId,
-        projectId,
-        actorUserId: userId,
-        action: 'SOD_VIOLATION_BLOCKED',
-        entityType: 'material_issues',
-        entityId: issue.id,
-        metadata: {
-          detail: 'A storekeeper cannot issue material to themselves',
-          requestedStatus: target,
-        },
-      });
-      return NextResponse.json(
-        {
-          error: 'Segregation of duty violation',
-          detail: 'A storekeeper cannot issue material to themselves',
-        },
-        { status: 409 }
-      );
-    }
-
     data.issued_by = userId;
     data.posted_at = now;
   }
 
   await db.material_issues.update({ where: { id }, data });
+
+  if (target === 'posted') {
+    const lines = await db.material_issue_lines.findMany({
+      where: { material_issue_id: id },
+    });
+
+    if (lines.length > 0) {
+      await db.stock_ledger_entries.createMany({
+        data: lines.map((line) => ({
+          project_id: issue.project_id,
+          warehouse_id: issue.warehouse_id,
+          inventory_item_id: line.inventory_item_id,
+          entry_type: 'issue',
+          quantity_delta: -line.issued_quantity,
+          unit_cost: line.unit_cost_snapshot,
+          value_delta: -Math.round(Number(line.issued_quantity) * Number(line.unit_cost_snapshot) * 10000) / 10000,
+          source_type: 'material_issue',
+          source_id: issue.id,
+          source_line_id: line.id,
+          occurred_at: issue.posted_at || now,
+          posted_by: userId,
+          notes: `Automatically posted from material issue ${issue.issue_number}`,
+        })),
+      });
+    }
+  }
 
   await writeAudit({
     tenantId,
@@ -118,4 +123,4 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   });
 
   redirect('/stores/issues');
-}
+});

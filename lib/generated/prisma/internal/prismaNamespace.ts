@@ -499,7 +499,8 @@ export const ModelName = {
   workflow_definition_steps: 'workflow_definition_steps',
   workflow_definitions: 'workflow_definitions',
   workflow_instances: 'workflow_instances',
-  workflow_tasks: 'workflow_tasks'
+  workflow_tasks: 'workflow_tasks',
+  idempotency_keys: 'idempotency_keys'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -515,7 +516,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "account" | "ai_findings" | "app_users" | "attendance_records" | "audit_events" | "boq_item_rates" | "boq_items" | "boq_sections" | "boq_versions" | "contract_clauses" | "contract_obligations" | "contract_parties" | "contract_rules" | "contract_securities" | "contracts" | "control_evaluations" | "control_rules" | "cost_codes" | "daywork_lines" | "daywork_sheets" | "document_links" | "document_pages" | "document_revisions" | "documents" | "goods_receipt_lines" | "goods_receipts" | "import_exceptions" | "import_jobs" | "import_mappings" | "import_rows" | "import_sheets" | "inspection_check_items" | "inspection_requests" | "inventory_items" | "ipc_adjustments" | "ipc_certificates" | "ipc_lines" | "ipc_materials_on_site" | "ipc_measurement_links" | "issue_comments" | "issues" | "locations" | "material_issue_lines" | "material_issues" | "measurement_lines" | "measurement_segments" | "measurements" | "notifications" | "organizations" | "outbox_events" | "payments" | "payroll_batches" | "payroll_lines" | "payroll_timesheet_links" | "permissions" | "project_member_roles" | "project_members" | "project_organizations" | "projects" | "provisional_sum_usages" | "purchase_order_lines" | "purchase_orders" | "purchase_requisition_lines" | "purchase_requisitions" | "record_attachments" | "rfi_responses" | "rfis" | "role_permissions" | "roles" | "session" | "source_lineage" | "stock_count_lines" | "stock_counts" | "stock_ledger_entries" | "stored_files" | "supplier_invoice_lines" | "supplier_invoices" | "supplier_payments" | "supplier_quote_lines" | "supplier_quotes" | "suppliers" | "tenant_member_roles" | "tenant_memberships" | "tenants" | "three_way_match_lines" | "three_way_matches" | "timesheet_lines" | "timesheets" | "transmittal_items" | "transmittals" | "user" | "variation_items" | "variations" | "verification" | "warehouses" | "work_packages" | "worker_payments" | "workers" | "workflow_actions" | "workflow_definition_steps" | "workflow_definitions" | "workflow_instances" | "workflow_tasks"
+    modelProps: "account" | "ai_findings" | "app_users" | "attendance_records" | "audit_events" | "boq_item_rates" | "boq_items" | "boq_sections" | "boq_versions" | "contract_clauses" | "contract_obligations" | "contract_parties" | "contract_rules" | "contract_securities" | "contracts" | "control_evaluations" | "control_rules" | "cost_codes" | "daywork_lines" | "daywork_sheets" | "document_links" | "document_pages" | "document_revisions" | "documents" | "goods_receipt_lines" | "goods_receipts" | "import_exceptions" | "import_jobs" | "import_mappings" | "import_rows" | "import_sheets" | "inspection_check_items" | "inspection_requests" | "inventory_items" | "ipc_adjustments" | "ipc_certificates" | "ipc_lines" | "ipc_materials_on_site" | "ipc_measurement_links" | "issue_comments" | "issues" | "locations" | "material_issue_lines" | "material_issues" | "measurement_lines" | "measurement_segments" | "measurements" | "notifications" | "organizations" | "outbox_events" | "payments" | "payroll_batches" | "payroll_lines" | "payroll_timesheet_links" | "permissions" | "project_member_roles" | "project_members" | "project_organizations" | "projects" | "provisional_sum_usages" | "purchase_order_lines" | "purchase_orders" | "purchase_requisition_lines" | "purchase_requisitions" | "record_attachments" | "rfi_responses" | "rfis" | "role_permissions" | "roles" | "session" | "source_lineage" | "stock_count_lines" | "stock_counts" | "stock_ledger_entries" | "stored_files" | "supplier_invoice_lines" | "supplier_invoices" | "supplier_payments" | "supplier_quote_lines" | "supplier_quotes" | "suppliers" | "tenant_member_roles" | "tenant_memberships" | "tenants" | "three_way_match_lines" | "three_way_matches" | "timesheet_lines" | "timesheets" | "transmittal_items" | "transmittals" | "user" | "variation_items" | "variations" | "verification" | "warehouses" | "work_packages" | "worker_payments" | "workers" | "workflow_actions" | "workflow_definition_steps" | "workflow_definitions" | "workflow_instances" | "workflow_tasks" | "idempotency_keys"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -8141,6 +8142,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    idempotency_keys: {
+      payload: Prisma.$idempotency_keysPayload<ExtArgs>
+      fields: Prisma.idempotency_keysFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.idempotency_keysFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$idempotency_keysPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.idempotency_keysFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$idempotency_keysPayload>
+        }
+        findFirst: {
+          args: Prisma.idempotency_keysFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$idempotency_keysPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.idempotency_keysFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$idempotency_keysPayload>
+        }
+        findMany: {
+          args: Prisma.idempotency_keysFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$idempotency_keysPayload>[]
+        }
+        create: {
+          args: Prisma.idempotency_keysCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$idempotency_keysPayload>
+        }
+        createMany: {
+          args: Prisma.idempotency_keysCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.idempotency_keysCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$idempotency_keysPayload>[]
+        }
+        delete: {
+          args: Prisma.idempotency_keysDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$idempotency_keysPayload>
+        }
+        update: {
+          args: Prisma.idempotency_keysUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$idempotency_keysPayload>
+        }
+        deleteMany: {
+          args: Prisma.idempotency_keysDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.idempotency_keysUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.idempotency_keysUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$idempotency_keysPayload>[]
+        }
+        upsert: {
+          args: Prisma.idempotency_keysUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$idempotency_keysPayload>
+        }
+        aggregate: {
+          args: Prisma.Idempotency_keysAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateIdempotency_keys>
+        }
+        groupBy: {
+          args: Prisma.idempotency_keysGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Idempotency_keysGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.idempotency_keysCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Idempotency_keysCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -10259,6 +10334,18 @@ export const Workflow_tasksScalarFieldEnum = {
 export type Workflow_tasksScalarFieldEnum = (typeof Workflow_tasksScalarFieldEnum)[keyof typeof Workflow_tasksScalarFieldEnum]
 
 
+export const Idempotency_keysScalarFieldEnum = {
+  key: 'key',
+  status: 'status',
+  request_hash: 'request_hash',
+  response_data: 'response_data',
+  completed_at: 'completed_at',
+  created_at: 'created_at'
+} as const
+
+export type Idempotency_keysScalarFieldEnum = (typeof Idempotency_keysScalarFieldEnum)[keyof typeof Idempotency_keysScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -11259,6 +11346,7 @@ export type GlobalOmitConfig = {
   workflow_definitions?: Prisma.workflow_definitionsOmit
   workflow_instances?: Prisma.workflow_instancesOmit
   workflow_tasks?: Prisma.workflow_tasksOmit
+  idempotency_keys?: Prisma.idempotency_keysOmit
 }
 
 /* Types for Logging */

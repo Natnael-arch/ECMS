@@ -5,12 +5,13 @@ import { db } from '@/lib/db';
 import { requireApiPermission, assertSegregationOfDuty } from '@/lib/server/session';
 import { getProjectContext } from '@/lib/server/context';
 import { writeAudit } from '@/lib/audit';
+import { withErrorHandling } from '@/lib/api-handler';
 
 export const dynamic = 'force-dynamic';
 
 const transitions: Record<payroll_status, payroll_status[]> = {
-  draft: [],
-  calculated: ['approved'],
+  draft: ['submitted'],
+  calculated: ['submitted', 'approved'],
   submitted: ['approved'],
   returned: ['submitted'],
   approved: [],
@@ -24,7 +25,7 @@ const TARGET_PERMISSIONS: Record<string, string> = {
   approved: 'payroll.approve',
 };
 
-export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export const POST = withErrorHandling(async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const { tenantId, projectId, userId } = await getProjectContext();
   if (!projectId) return NextResponse.json({ error: 'No project selected' }, { status: 400 });
@@ -88,4 +89,4 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   });
 
   redirect('/workforce/payroll');
-}
+});

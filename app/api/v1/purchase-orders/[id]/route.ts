@@ -5,6 +5,8 @@ import { db } from '@/lib/db';
 import { requireApiPermission, assertSegregationOfDuty } from '@/lib/server/session';
 import { getProjectContext } from '@/lib/server/context';
 import { writeAudit } from '@/lib/audit';
+import { createNotification } from '@/lib/notifications';
+import { withErrorHandling } from '@/lib/api-handler';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,7 +25,7 @@ const TARGET_PERMISSIONS: Record<string, string> = {
   issued: 'procurement.order',
 };
 
-export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export const POST = withErrorHandling(async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const { tenantId, projectId, userId } = await getProjectContext();
   if (!projectId) return NextResponse.json({ error: 'No project selected' }, { status: 400 });
@@ -107,5 +109,18 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     after: { status: target },
   });
 
+  if (target === 'approved' && po.created_by) {
+    await createNotification({
+      tenantId,
+      userId: po.created_by,
+      projectId: projectId ?? undefined,
+      title: 'Purchase order approved',
+      body: `Purchase order ${po.purchase_order_number || id} has been approved.`,
+      notificationType: 'info',
+      targetType: 'purchase_orders',
+      targetId: po.id,
+    });
+  }
+
   redirect('/procurement/orders');
-}
+});

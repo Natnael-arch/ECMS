@@ -4,8 +4,9 @@ import { db } from '@/lib/db';
 import { requireApiPermission } from '@/lib/server/session';
 import { getProjectContext } from '@/lib/server/context';
 import { writeAudit } from '@/lib/audit';
+import { withErrorHandling } from '@/lib/api-handler';
 import { calculateIpc, round2 } from '@/lib/calculations/ipc';
-import type { IpcContract, IpcRules, PreviousIpc, BoqLineInput } from '@/lib/calculations/ipc';
+import type { IpcContract, IpcRules, PreviousIpc, BoqLineInput, MosLineInput, AdjustmentInput } from '@/lib/calculations/ipc';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,9 +21,10 @@ const CALCULATION_VERSION = 'ipc-calc-v1';
  *
  * Body: { measurement_line_ids: string[] }
  */
-export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export const POST = withErrorHandling(async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const { tenantId, projectId, userId } = await getProjectContext();
+  if (!projectId) return NextResponse.json({ error: 'No project selected' }, { status: 400 });
 
   const auth = await requireApiPermission('ipc.prepare', projectId);
   if (auth instanceof NextResponse) return auth;
@@ -88,6 +90,28 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       };
     }
   }
+
+  // ── Load Materials on Site for this IPC ──────────────────────────────────
+  const mosRecords = await db.ipc_materials_on_site.findMany({
+    where: { ipc_id: id },
+  });
+  const mosLines: MosLineInput[] = mosRecords.map((m) => ({
+    mos_id: m.id,
+    gross_value: Number(m.gross_value),
+    eligible_value: Number(m.eligible_value),
+    current_credit: Number(m.current_credit),
+    current_recovery: Number(m.current_recovery),
+  }));
+
+  // ── Load Adjustments for this IPC ────────────────────────────────────────
+  const adjustmentRecords = await db.ipc_adjustments.findMany({
+    where: { ipc_id: id },
+  });
+  const adjInputs: AdjustmentInput[] = adjustmentRecords.map((a) => ({
+    adjustment_id: a.id,
+    direction: Number(a.direction),
+    current_amount: Number(a.current_amount),
+  }));
 
   // ── Load measurement lines and aggregate by BOQ item ────────────────────
   const measurementLines = await db.measurement_lines.findMany({
@@ -165,6 +189,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       rate_snapshot: rate,
       previous_quantity: prevCumQtyMap.get(boqId) ?? 0,
       current_quantity_this_period: qtyByBoqItem.get(boqId) ?? 0,
+      approved_quantity: boq.approved_quantity != null ? Number(boq.approved_quantity) : undefined,
     };
   });
 
@@ -173,6 +198,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     rules,
     previousIpc,
     boqLines,
+    mosLines,
+    adjustments: adjInputs,
   });
 
   // ── Snapshot and hash ───────────────────────────────────────────────────
@@ -245,6 +272,9 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       data: {
         current_work_amount: result.current_work_amount,
         cumulative_work_amount: result.cumulative_work_amount,
+        current_mos_amount: result.current_mos_credit,
+        current_additions: result.current_additions,
+        current_deductions: result.current_deductions,
         current_retention: result.current_retention,
         cumulative_retention: result.cumulative_retention,
         current_advance_recovery: result.current_advance_recovery,
@@ -275,9 +305,12 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       calculation_version: CALCULATION_VERSION,
       calculation_hash: calculationHash,
       current_work_amount: result.current_work_amount,
+      current_additions: result.current_additions,
+      current_deductions: result.current_deductions,
       net_current_amount: result.net_current_amount,
       measurement_line_count: measurementLineIds.length,
       boq_line_count: result.lines.length,
+      overrun_count: result.overrun_items.length,
     },
   });
 
@@ -288,6 +321,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     summary: {
       current_work_amount: result.current_work_amount,
       cumulative_work_amount: result.cumulative_work_amount,
+      current_mos_credit: result.current_mos_credit,
+      current_mos_recovery: result.current_mos_recovery,
+      current_additions: result.current_additions,
+      current_deductions: result.current_deductions,
       current_retention: result.current_retention,
       current_advance_recovery: result.current_advance_recovery,
       current_price_adjustment: result.current_price_adjustment,
@@ -297,7 +334,11 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       net_current_amount: result.net_current_amount,
       cumulative_net_amount: result.cumulative_net_amount,
     },
+    overrun_items: result.overrun_items,
+    overrun_warning: result.overrun_items.length > 0
+      ? `${result.overrun_items.length} BOQ item(s) exceed approved quantity`
+      : null,
     lines_written: result.lines.length,
     measurement_links_written: measurementLineIds.length,
   });
-}
+});

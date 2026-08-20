@@ -5,6 +5,8 @@ import { db } from '@/lib/db';
 import { requireApiPermission, IPC_TARGET_PERMISSIONS, assertSegregationOfDuty } from '@/lib/server/session';
 import { getProjectContext } from '@/lib/server/context';
 import { writeAudit } from '@/lib/audit';
+import { withErrorHandling } from '@/lib/api-handler';
+import { notifyProjectMembers } from '@/lib/notifications';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,9 +21,10 @@ const transitions: Record<ipc_status, ipc_status[]> = {
   cancelled: [],
 };
 
-export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export const POST = withErrorHandling(async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const { tenantId, projectId, userId } = await getProjectContext();
+  if (!projectId) return NextResponse.json({ error: 'No project selected' }, { status: 400 });
 
   const ipc = await db.ipc_certificates.findUnique({ where: { id } });
   if (!ipc) return NextResponse.json({ error: 'IPC not found' }, { status: 404 });
@@ -88,5 +91,38 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     after: { status: target },
   });
 
+  const ipcRef = ipc.certificate_reference || `IPC #${ipc.ipc_number}`;
+  if (projectId) {
+    if (target === 'submitted') {
+      await notifyProjectMembers(
+        tenantId, projectId, 'ipc.review',
+        'IPC submitted for review',
+        `${ipcRef} has been submitted and is ready for review.`,
+        'action_required', 'ipc_certificates', ipc.id
+      );
+    } else if (target === 'recommended') {
+      await notifyProjectMembers(
+        tenantId, projectId, 'ipc.certify',
+        'IPC recommended for certification',
+        `${ipcRef} has been recommended and requires certification.`,
+        'action_required', 'ipc_certificates', ipc.id
+      );
+    } else if (target === 'returned') {
+      await notifyProjectMembers(
+        tenantId, projectId, 'ipc.prepare',
+        'IPC returned for revision',
+        `${ipcRef} has been returned and requires revision.`,
+        'action_required', 'ipc_certificates', ipc.id
+      );
+    } else if (target === 'certified') {
+      await notifyProjectMembers(
+        tenantId, projectId, 'payment.record',
+        'IPC certified — ready for payment',
+        `${ipcRef} has been certified and is ready for payment recording.`,
+        'info', 'ipc_certificates', ipc.id
+      );
+    }
+  }
+
   redirect(`/ipcs/${ipc.id}`);
-}
+});

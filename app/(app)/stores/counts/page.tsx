@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Card } from '@/components/ui/Card';
 import { Table, THead, TH, TBody, TR, TD } from '@/components/ui/Table';
 import { StatusPill } from '@/components/ui/StatusPill';
@@ -38,7 +39,7 @@ export default async function StockCountsPage() {
                 const varianceLines = c.stock_count_lines.filter((l) => Number(l.variance_quantity) !== 0).length;
                 return (
                   <TR key={c.id} className="hover:bg-ecms-elevated/40">
-                    <TD className="font-medium">{c.count_number}</TD>
+                    <TD className="font-medium"><Link href={`/stores/counts/${c.id}`} className="hover:underline">{c.count_number}</Link></TD>
                     <TD className="text-ecms-muted">{c.warehouses.warehouse_code}</TD>
                     <TD>{date(c.count_date)}</TD>
                     <TD><StatusPill status={c.status} /></TD>
