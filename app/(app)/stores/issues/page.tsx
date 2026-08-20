@@ -17,7 +17,7 @@ export default async function MaterialIssuesPage() {
 
   const [issues, warehouses, workPackages] = await Promise.all([
     db.material_issues.findMany({
-      where: projectId ? { project_id: projectId } : { project: { tenant_id: tenantId } },
+      where: projectId ? { project_id: projectId } : { projects: { tenant_id: tenantId } },
       orderBy: { issue_date: 'desc' },
       include: {
         warehouses: { select: { warehouse_code: true } },
@@ -25,8 +25,8 @@ export default async function MaterialIssuesPage() {
         material_issue_lines: { select: { line_number: true, inventory_item_id: true, requested_quantity: true, approved_quantity: true, issued_quantity: true, inventory_items: { select: { item_code: true, description: true } } } },
       },
     }),
-    db.warehouses.findMany({ where: projectId ? { project_id: projectId } : { project: { tenant_id: tenantId } }, select: { id: true, warehouse_code: true } }),
-    db.work_packages.findMany({ where: projectId ? { project_id: projectId } : { project: { tenant_id: tenantId } }, select: { id: true, package_code: true } }),
+    db.warehouses.findMany({ where: projectId ? { project_id: projectId } : { projects: { tenant_id: tenantId } }, select: { id: true, warehouse_code: true } }),
+    db.work_packages.findMany({ where: projectId ? { project_id: projectId } : { projects: { tenant_id: tenantId } }, select: { id: true, package_code: true } }),
   ]);
 
   const nextNumber = issues.length + 1;

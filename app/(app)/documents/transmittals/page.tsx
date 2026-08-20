@@ -17,7 +17,7 @@ export default async function TransmittalsPage() {
   const { tenantId, projectId } = await getProjectContext();
 
   const transmittals = await db.transmittals.findMany({
-    where: projectId ? { project_id: projectId } : { project: { tenant_id: tenantId } },
+    where: projectId ? { project_id: projectId } : { projects: { tenant_id: tenantId } },
     orderBy: { sent_at: 'desc' },
     include: {
       contracts: { select: { contract_number: true } },

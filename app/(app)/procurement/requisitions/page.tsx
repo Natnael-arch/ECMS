@@ -17,7 +17,7 @@ export default async function RequisitionsPage() {
 
   const [reqs, costCodes, workPackages] = await Promise.all([
     db.purchase_requisitions.findMany({
-      where: projectId ? { project_id: projectId } : { project: { tenant_id: tenantId } },
+      where: projectId ? { project_id: projectId } : { projects: { tenant_id: tenantId } },
       orderBy: { created_at: 'desc' },
       include: {
         purchase_requisition_lines: { select: { line_number: true, description: true, requested_quantity: true, unit: true, estimated_amount: true } },
@@ -25,8 +25,8 @@ export default async function RequisitionsPage() {
         app_users_purchase_requisitions_requested_byToapp_users: { select: { display_name: true } },
       },
     }),
-    db.cost_codes.findMany({ where: projectId ? { project_id: projectId } : { project: { tenant_id: tenantId } }, select: { id: true, cost_code: true } }),
-    db.work_packages.findMany({ where: projectId ? { project_id: projectId } : { project: { tenant_id: tenantId } }, select: { id: true, package_code: true } }),
+    db.cost_codes.findMany({ where: projectId ? { project_id: projectId } : { projects: { tenant_id: tenantId } }, select: { id: true, cost_code: true } }),
+    db.work_packages.findMany({ where: projectId ? { project_id: projectId } : { projects: { tenant_id: tenantId } }, select: { id: true, package_code: true } }),
   ]);
 
   const nextNumber = reqs.length + 1;

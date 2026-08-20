@@ -16,7 +16,7 @@ export default async function VariationsPage() {
   const { tenantId, projectId } = await getProjectContext();
 
   const variations = await db.variations.findMany({
-    where: projectId ? { project_id: projectId } : { project: { tenant_id: tenantId } },
+    where: projectId ? { project_id: projectId } : { projects: { tenant_id: tenantId } },
     orderBy: { created_at: 'desc' },
     include: {
       contracts: { select: { contract_number: true } },

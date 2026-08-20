@@ -17,15 +17,15 @@ export default async function BoqExplorerPage() {
 
   const [versions, progress, sections, items] = await Promise.all([
     db.boq_versions.findMany({
-      where: { contracts: { project: { tenant_id: tenantId } } },
+      where: { contracts: { projects: { tenant_id: tenantId } } },
       orderBy: [{ status: 'asc' }, { version_number: 'desc' }],
       include: { contracts: { select: { contract_number: true } } },
     }),
     db.$queryRaw<Array<{ boq_item_id: string; item_number: string; description: string; unit: string | null; approved_quantity: number | null; rate: number | null; approved_amount: number; measured_quantity: number; certified_quantity: number; certified_amount: number; remaining_quantity: number | null }>>`
       SELECT boq_item_id, item_number, description, unit, approved_quantity, rate, approved_amount, measured_quantity, certified_quantity, certified_amount, remaining_quantity
       FROM ecms.v_boq_progress WHERE project_id = ${projectId ?? ''}`,
-    db.boq_sections.findMany({ where: { boq_versions: { contracts: { project: { tenant_id: tenantId } } } }, orderBy: { sort_order: 'asc' } }),
-    db.boq_items.count({ where: { boq_versions: { contracts: { project: { tenant_id: tenantId } } } } }),
+    db.boq_sections.findMany({ where: { boq_versions: { contracts: { projects: { tenant_id: tenantId } } } }, orderBy: { sort_order: 'asc' } }),
+    db.boq_items.count({ where: { boq_versions: { contracts: { projects: { tenant_id: tenantId } } } } }),
   ]);
 
   const totalApproved = progress.reduce((s, r) => s + Number(r.approved_amount), 0);

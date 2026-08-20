@@ -18,7 +18,7 @@ export default async function ContractsPage({ searchParams }: { searchParams: Pr
   const { tenantId } = await getProjectContext();
 
   const contracts = await db.contracts.findMany({
-    where: project ? { project_id: project } : { project: { tenant_id: tenantId } },
+    where: project ? { project_id: project } : { projects: { tenant_id: tenantId } },
     orderBy: [{ status: 'asc' }, { contract_number: 'asc' }],
     include: {
       projects: { select: { project_code: true, name: true } },
@@ -54,7 +54,7 @@ export default async function ContractsPage({ searchParams }: { searchParams: Pr
               {contracts.map((c) => {
                 const variations = c.variations.reduce((s, v) => s + Number(v.approved_value), 0);
                 const certified = c.ipc_certificates.reduce((s, i) => s + Number(i.net_current_amount), 0);
-                const approvedBoq = c.boq_versions.find((b) => b.status === 'approved');
+                const approvedBoq = c.boq_versions?.status === 'approved' ? c.boq_versions : null;
                 return (
                   <TR key={c.id} className="hover:bg-ecms-elevated/40">
                     <TD className="font-medium">{c.contract_number}</TD>
@@ -90,8 +90,8 @@ export default async function ContractsPage({ searchParams }: { searchParams: Pr
               <div className="flex justify-between"><dt className="text-ecms-muted">Commencement</dt><dd className="font-medium">{date(c.commencement_date)}</dd></div>
               <div className="flex justify-between"><dt className="text-ecms-muted">Planned completion</dt><dd className="font-medium">{date(c.planned_completion_date)}</dd></div>
             </dl>
-            {approvedBoq && (
-              <p className="mt-3 text-xs text-ecms-muted">Approved BOQ v{approvedBoq.version_number} · total {money(Number(approvedBoq.grand_total), c.currency)}</p>
+            {c.boq_versions?.status === 'approved' && (
+              <p className="mt-3 text-xs text-ecms-muted">Approved BOQ v{c.boq_versions.version_number} · total {money(Number(c.boq_versions.grand_total), c.currency)}</p>
             )}
           </Card>
         ))}

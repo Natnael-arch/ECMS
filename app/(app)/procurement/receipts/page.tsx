@@ -16,13 +16,13 @@ export default async function GoodsReceiptsPage() {
   const { tenantId, projectId } = await getProjectContext();
 
   const receipts = await db.goods_receipts.findMany({
-    where: projectId ? { project_id: projectId } : { project: { tenant_id: tenantId } },
+    where: projectId ? { project_id: projectId } : { projects: { tenant_id: tenantId } },
     orderBy: { receipt_date: 'desc' },
     include: {
       purchase_orders: { select: { purchase_order_number: true } },
       warehouses: { select: { warehouse_code: true, name: true } },
       app_users_goods_receipts_received_byToapp_users: { select: { display_name: true } },
-      goods_receipt_lines: { select: { line_number: true, description: true, received_quantity: true, accepted_quantity: true, rejected_quantity: true } },
+      goods_receipt_lines: { select: { line_number: true, received_quantity: true, accepted_quantity: true, rejected_quantity: true } },
     },
   });
 

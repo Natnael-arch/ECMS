@@ -32,5 +32,5 @@ export function pct(value: number | string | bigint | null | undefined): string 
 }
 
 export function moneySum(values: Array<number | string | bigint | null | undefined>): number {
-  return values.reduce((sum, v) => sum + (typeof v === 'number' ? v : Number(v ?? 0)), 0);
+  return values.reduce<number>((sum, v) => sum + (typeof v === 'number' ? v : Number(v ?? 0)), 0);
 }

@@ -20,15 +20,15 @@ export default async function CostCodesPage() {
   });
 
   const [labor, materials] = await Promise.all([
-    db.timesheet_lines.groupBy({ by: ['cost_code_id'], where: { cost_code_id: { not: null }, timesheet: { status: { in: ['approved', 'included_in_payroll'] }, project: { tenant_id: tenantId } } }, _sum: { gross_amount: true } }),
+    db.timesheet_lines.groupBy({ by: ['cost_code_id'], where: { cost_code_id: { not: null }, timesheets: { status: { in: ['approved', 'included_in_payroll'] }, projects: { tenant_id: tenantId } } }, _sum: { gross_amount: true } }),
     db.material_issue_lines.groupBy({
       by: ['material_issue_id'],
-      where: { material_issues: { status: 'posted', project: { tenant_id: tenantId } } },
+      where: { material_issues: { status: 'posted', projects: { tenant_id: tenantId } } },
       _sum: { unit_cost_snapshot: true },
     }).then(async (rows) => {
       const byCode = new Map<string, number>();
       const lines = await db.material_issue_lines.findMany({
-        where: { material_issues: { status: 'posted', project: { tenant_id: tenantId } } },
+        where: { material_issues: { status: 'posted', projects: { tenant_id: tenantId } } },
         select: { unit_cost_snapshot: true, issued_quantity: true, material_issues: { select: { cost_code_id: true } } },
       });
       for (const l of lines) {

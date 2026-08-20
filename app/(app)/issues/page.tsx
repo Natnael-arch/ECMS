@@ -12,8 +12,8 @@ import { date } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
 
-const severityTone: Record<string, 'info' | 'low' | 'medium' | 'high' | 'critical'> = {
-  info: 'info', low: 'low', medium: 'medium', high: 'high', critical: 'critical',
+const severityTone: Record<string, 'info' | 'neutral' | 'warning' | 'danger'> = {
+  info: 'info', low: 'neutral', medium: 'warning', high: 'danger', critical: 'danger',
 };
 
 export default async function IssuesPage() {
@@ -21,7 +21,7 @@ export default async function IssuesPage() {
   const { tenantId, projectId } = await getProjectContext();
 
   const issues = await db.issues.findMany({
-    where: projectId ? { project_id: projectId } : { project: { tenant_id: tenantId } },
+    where: projectId ? { project_id: projectId } : { projects: { tenant_id: tenantId } },
     orderBy: { created_at: 'desc' },
     include: {
       contracts: { select: { contract_number: true } },

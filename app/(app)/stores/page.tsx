@@ -19,8 +19,8 @@ export default async function StoresPage() {
     db.$queryRaw<Array<{ inventory_item_id: string; warehouse_code: string; warehouse_name: string; item_code: string; description: string; unit: string; quantity_on_hand: number; ledger_value: number; last_movement_at: Date | null }>>`
       SELECT inventory_item_id, warehouse_code, warehouse_name, item_code, description, unit, quantity_on_hand, ledger_value, last_movement_at
       FROM ecms.v_stock_on_hand WHERE project_id = ${projectId ?? ''} ORDER BY item_code ASC, warehouse_code ASC`,
-    db.warehouses.findMany({ where: projectId ? { project_id: projectId } : { project: { tenant_id: tenantId } }, orderBy: { warehouse_code: 'asc' } }),
-    db.inventory_items.findMany({ where: projectId ? { project_id: projectId } : { project: { tenant_id: tenantId } }, orderBy: { item_code: 'asc' }, include: { _count: { select: { stock_ledger_entries: true } } } }),
+    db.warehouses.findMany({ where: projectId ? { project_id: projectId } : { projects: { tenant_id: tenantId } }, orderBy: { warehouse_code: 'asc' } }),
+    db.inventory_items.findMany({ where: projectId ? { project_id: projectId } : { projects: { tenant_id: tenantId } }, orderBy: { item_code: 'asc' }, include: { _count: { select: { stock_ledger_entries: true } } } }),
     db.$queryRaw<Array<{ entry_type: string; quantity_delta: number; source_type: string; occurred_at: Date }>>`
       SELECT entry_type, quantity_delta, source_type, occurred_at FROM ecms.stock_ledger_entries
       WHERE project_id = ${projectId ?? ''} ORDER BY occurred_at DESC LIMIT 10`,

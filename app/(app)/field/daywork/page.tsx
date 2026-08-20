@@ -16,7 +16,7 @@ export default async function DayworkPage() {
   const { tenantId, projectId } = await getProjectContext();
 
   const sheets = await db.daywork_sheets.findMany({
-    where: projectId ? { project_id: projectId } : { project: { tenant_id: tenantId } },
+    where: projectId ? { project_id: projectId } : { projects: { tenant_id: tenantId } },
     orderBy: { work_date: 'desc' },
     include: {
       contracts: { select: { contract_number: true } },

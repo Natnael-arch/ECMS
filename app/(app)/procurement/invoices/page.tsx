@@ -18,7 +18,7 @@ export default async function SupplierInvoicesPage() {
 
   const [invoices, worklist] = await Promise.all([
     db.supplier_invoices.findMany({
-      where: projectId ? { project_id: projectId } : { project: { tenant_id: tenantId } },
+      where: projectId ? { project_id: projectId } : { projects: { tenant_id: tenantId } },
       orderBy: { invoice_date: 'desc' },
       include: {
         suppliers: { include: { organizations: { select: { legal_name: true } } } },

@@ -16,7 +16,7 @@ export default async function AttendancePage() {
   const { tenantId, projectId } = await getProjectContext();
 
   const records = await db.attendance_records.findMany({
-    where: projectId ? { project_id: projectId } : { project: { tenant_id: tenantId } },
+    where: projectId ? { project_id: projectId } : { projects: { tenant_id: tenantId } },
     orderBy: { attendance_date: 'desc' },
     take: 200,
     include: {

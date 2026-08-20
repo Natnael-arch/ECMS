@@ -18,14 +18,14 @@ export default async function PayrollPage() {
 
   const [batches, labor, workers, workerPayments] = await Promise.all([
     db.payroll_batches.findMany({
-      where: projectId ? { project_id: projectId } : { project: { tenant_id: tenantId } },
+      where: projectId ? { project_id: projectId } : { projects: { tenant_id: tenantId } },
       orderBy: { period_end: 'desc' },
       include: { _count: { select: { payroll_lines: true } } },
     }),
     db.$queryRaw<Array<{ work_package_id: string | null; package_code: string | null; cost_code: string | null; worker_id: string; worker_number: string; display_name: string; regular_hours: number; overtime_hours: number; approved_gross_amount: number }>>`
       SELECT work_package_id, package_code, cost_code, worker_id, worker_number, display_name, regular_hours, overtime_hours, approved_gross_amount
       FROM ecms.v_labor_cost_by_package WHERE project_id = ${projectId ?? ''}`,
-    db.workers.count({ where: projectId ? { project_id: projectId } : { project: { tenant_id: tenantId } } }),
+    db.workers.count({ where: projectId ? { project_id: projectId } : { projects: { tenant_id: tenantId } } }),
     db.$queryRaw<Array<{ payment_date: Date; amount: number }>>`
       SELECT payment_date, amount FROM ecms.worker_payments wp
       JOIN ecms.payroll_lines pl ON pl.id = wp.payroll_line_id

@@ -17,7 +17,7 @@ export default async function ImportsPage() {
   const { tenantId, projectId } = await getProjectContext();
 
   const jobs = await db.import_jobs.findMany({
-    where: projectId ? { project_id: projectId } : { project: { tenant_id: tenantId } },
+    where: projectId ? { project_id: projectId } : { projects: { tenant_id: tenantId } },
     orderBy: { created_at: 'desc' },
     include: {
       app_users: { select: { display_name: true } },

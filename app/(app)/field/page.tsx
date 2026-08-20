@@ -18,7 +18,7 @@ export default async function FieldMeasurementsPage() {
 
   const [measurements, contracts, workPackages, orgs] = await Promise.all([
     db.measurements.findMany({
-      where: projectId ? { project_id: projectId } : { project: { tenant_id: tenantId } },
+      where: projectId ? { project_id: projectId } : { projects: { tenant_id: tenantId } },
       orderBy: { measurement_date: 'desc' },
       include: {
         contracts: { select: { contract_number: true } },
@@ -26,8 +26,8 @@ export default async function FieldMeasurementsPage() {
         _count: { select: { measurement_lines: true } },
       },
     }),
-    db.contracts.findMany({ where: projectId ? { project_id: projectId } : { project: { tenant_id: tenantId } }, select: { id: true, contract_number: true } }),
-    db.work_packages.findMany({ where: projectId ? { project_id: projectId } : { project: { tenant_id: tenantId } }, select: { id: true, package_code: true } }),
+    db.contracts.findMany({ where: projectId ? { project_id: projectId } : { projects: { tenant_id: tenantId } }, select: { id: true, contract_number: true } }),
+    db.work_packages.findMany({ where: projectId ? { project_id: projectId } : { projects: { tenant_id: tenantId } }, select: { id: true, package_code: true } }),
     db.organizations.findMany({ where: { tenant_id: tenantId }, select: { id: true, short_name: true } }),
   ]);
 
@@ -51,7 +51,7 @@ export default async function FieldMeasurementsPage() {
           </select>
           <select name="contractor_org_id" className="rounded-lg border border-ecms-border bg-ecms-bg px-3 py-1.5 text-sm text-ecms-text">
             <option value="">Contractor (optional)</option>
-            {orgs.map((o) => <option key={o.id} value={o.id}>{o.short_name ?? o.legal_name}</option>)}
+            {orgs.map((o) => <option key={o.id} value={o.id}>{o.short_name}</option>)}
           </select>
           <input name="summary" className="rounded-lg border border-ecms-border bg-ecms-bg px-3 py-1.5 text-sm text-ecms-text" placeholder="Summary (optional)" />
           <div className="sm:col-span-2 lg:col-span-2 flex items-end">

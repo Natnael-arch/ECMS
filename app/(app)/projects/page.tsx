@@ -19,7 +19,7 @@ export default async function ProjectsPage() {
 
   const [projects, contracts] = await Promise.all([
     db.projects.findMany({ where: { tenant_id: tenantId }, orderBy: { created_at: 'asc' }, include: { _count: { select: { contracts: true, measurements: true, ipc_certificates: true } } } }),
-    db.contracts.findMany({ where: { project: { tenant_id: tenantId } }, orderBy: { revised_contract_amount: 'desc' }, take: 5, include: { projects: { select: { project_code: true, name: true } } } }),
+    db.contracts.findMany({ where: { projects: { tenant_id: tenantId } }, orderBy: { revised_contract_amount: 'desc' }, take: 5, include: { projects: { select: { project_code: true, name: true } } } }),
   ]);
 
   const contractTotals = new Map<string, number>();

@@ -38,17 +38,18 @@ export default async function DashboardPage() {
     }),
     db.notifications.findMany({ where: { user_id: ctx.appUser.id }, orderBy: { created_at: 'desc' }, take: 6 }),
     db.issues.findMany({ where: { project_id: projectId ?? undefined, status: { notIn: ['resolved', 'closed'] } }, orderBy: { created_at: 'desc' }, take: 6, include: { app_users_issues_assigned_toToapp_users: { select: { display_name: true } } } }),
-    db.$queryRaw<Array<{ item_code: string; description: string; unit: string; qty_on_hand: number; minimum_stock: number; warehouse_code: string }>>`
-      SELECT s.item_code, s.description, s.unit, s.qty_on_hand, s.minimum_stock, s.warehouse_code
+    db.$queryRaw<Array<{ item_code: string; description: string; unit: string; quantity_on_hand: number; minimum_stock: number; warehouse_code: string }>>`
+      SELECT s.item_code, s.description, s.unit, s.quantity_on_hand, ii.minimum_stock, s.warehouse_code
       FROM ecms.v_stock_on_hand s
-      WHERE s.project_id = ${projectId ?? ''} AND s.qty_on_hand < s.minimum_stock
-      ORDER BY (s.minimum_stock - s.qty_on_hand) DESC LIMIT 6`,
+      JOIN ecms.inventory_items ii ON ii.item_code = s.item_code
+      WHERE s.project_id = ${projectId ?? ''} AND s.quantity_on_hand < ii.minimum_stock
+      ORDER BY (ii.minimum_stock - s.quantity_on_hand) DESC LIMIT 6`,
     db.cost_codes.groupBy({ by: ['project_id'], where: { project_id: projectId ?? undefined }, _sum: { budget_amount: true } }),
   ]);
 
   const totalContractValue = contracts.reduce((s, c) => s + Number(c.revised_contract_amount), 0);
   const certifiedToDate = ipcs.reduce((s, i) => s + Number(i.net_current_amount), 0);
-  const paidToDate = await db.payments.aggregate({ where: { ipc: { project_id: projectId ?? undefined } }, _sum: { net_paid_amount: true } });
+  const paidToDate = await db.payments.aggregate({ where: { ipc_certificates: { project_id: projectId ?? undefined } }, _sum: { net_paid_amount: true } });
   const budgetConsumed = costCodes.reduce((s, c) => s + Number(c._sum.budget_amount ?? 0), 0);
 
   return (
@@ -140,9 +141,9 @@ export default async function DashboardPage() {
                   <TD className="text-ecms-muted">{row.warehouse_code}</TD>
                   <TD className="font-medium">{row.item_code}</TD>
                   <TD className="max-w-[280px] truncate">{row.description}</TD>
-                  <TD className="text-right">{num(row.qty_on_hand)}</TD>
+                  <TD className="text-right">{num(row.quantity_on_hand)}</TD>
                   <TD className="text-right">{num(row.minimum_stock)}</TD>
-                  <TD className="text-right text-ecms-danger font-medium">{num(Number(row.minimum_stock) - Number(row.qty_on_hand))}</TD>
+                  <TD className="text-right text-ecms-danger font-medium">{num(Number(row.minimum_stock) - Number(row.quantity_on_hand))}</TD>
                 </TR>
               ))}
             </TBody>

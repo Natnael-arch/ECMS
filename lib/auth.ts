@@ -6,6 +6,11 @@ import { db } from '@/lib/db';
 export const auth = betterAuth({
   appName: 'ECMS',
   secret: process.env.BETTER_AUTH_SECRET,
+  advanced: {
+    database: {
+      generateId: 'uuid',
+    },
+  },
   database: prismaAdapter(db, {
     provider: 'postgresql',
   }),

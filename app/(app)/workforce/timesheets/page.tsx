@@ -17,7 +17,7 @@ export default async function TimesheetsPage() {
 
   const [timesheets, workers] = await Promise.all([
     db.timesheets.findMany({
-      where: projectId ? { project_id: projectId } : { project: { tenant_id: tenantId } },
+      where: projectId ? { project_id: projectId } : { projects: { tenant_id: tenantId } },
       orderBy: { period_end: 'desc' },
       include: {
         contracts: { select: { contract_number: true } },
@@ -25,7 +25,7 @@ export default async function TimesheetsPage() {
         _count: { select: { timesheet_lines: true } },
       },
     }),
-    db.workers.findMany({ where: projectId ? { project_id: projectId } : { project: { tenant_id: tenantId } }, select: { id: true, worker_number: true, display_name: true }, orderBy: { display_name: 'asc' } }),
+    db.workers.findMany({ where: projectId ? { project_id: projectId } : { projects: { tenant_id: tenantId } }, select: { id: true, worker_number: true, display_name: true }, orderBy: { display_name: 'asc' } }),
   ]);
 
   const nextNumber = timesheets.length + 1;

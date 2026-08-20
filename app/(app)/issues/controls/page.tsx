@@ -19,13 +19,13 @@ export default async function ControlsPage() {
   const [rules, evaluations, findings] = await Promise.all([
     db.control_rules.findMany({ where: { tenant_id: tenantId }, orderBy: { rule_key: 'asc' } }),
     db.control_evaluations.findMany({
-      where: projectId ? { project_id: projectId } : { project: { tenant_id: tenantId } },
+      where: projectId ? { project_id: projectId } : { projects: { tenant_id: tenantId } },
       orderBy: { evaluated_at: 'desc' },
       take: 100,
       include: { control_rules: { select: { name: true, rule_key: true } } },
     }),
     db.ai_findings.findMany({
-      where: projectId ? { project_id: projectId } : { project: { tenant_id: tenantId } },
+      where: projectId ? { project_id: projectId } : { projects: { tenant_id: tenantId } },
       orderBy: { created_at: 'desc' },
       take: 50,
     }),

@@ -41,7 +41,7 @@ class LocalDriver implements ObjectDriver {
       await writeFile(full, data);
     } else {
       const chunks: Buffer[] = [];
-      await pipeline(data, new PassThrough().on('data', (c) => chunks.push(Buffer.from(c))));
+      await pipeline(data as any, new PassThrough().on('data', (c: any) => chunks.push(Buffer.from(c))));
       await writeFile(full, Buffer.concat(chunks));
     }
     const size = (await stat(full)).size;

@@ -16,11 +16,11 @@ export default async function StockCountsPage() {
   const { tenantId, projectId } = await getProjectContext();
 
   const counts = await db.stock_counts.findMany({
-    where: projectId ? { project_id: projectId } : { project: { tenant_id: tenantId } },
+    where: projectId ? { project_id: projectId } : { projects: { tenant_id: tenantId } },
     orderBy: { count_date: 'desc' },
     include: {
       warehouses: { select: { warehouse_code: true } },
-      stock_count_lines: { select: { line_number: true, system_quantity: true, counted_quantity: true, variance_quantity: true, inventory_items: { select: { item_code: true } } } },
+      stock_count_lines: { select: { system_quantity: true, counted_quantity: true, variance_quantity: true, inventory_items: { select: { item_code: true } } } },
     },
   });
 

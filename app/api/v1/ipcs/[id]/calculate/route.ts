@@ -141,7 +141,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   }
 
   // ── Load previous quantities from prior IPC lines (if any) ──────────────
-  let previousLines: Array<{ boq_item_id: string; cumulative_quantity: number }> = [];
+  let previousLines: Array<{ boq_item_id: string; cumulative_quantity: unknown }> = [];
   if (ipc.ipc_number > 1) {
     const prevIpc = await db.ipc_certificates.findFirst({
       where: { contract_id: ipc.contract_id, ipc_number: ipc.ipc_number - 1 },
@@ -197,7 +197,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   // ── Transaction: replace ipc_lines + ipc_measurement_links + update certificate ──
   await db.$transaction(async (tx) => {
     // Delete existing lines and links for this IPC (safe re-runnable)
-    await tx.ipc_measurement_links.deleteMany({ where: { ipc_line: { ipc_id: id } } });
+    await tx.ipc_measurement_links.deleteMany({ where: { ipc_lines: { ipc_id: id } } });
     await tx.ipc_lines.deleteMany({ where: { ipc_id: id } });
 
     // Write fresh ipc_lines

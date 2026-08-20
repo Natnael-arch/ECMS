@@ -17,12 +17,12 @@ export default async function WorkforcePage() {
 
   const [workers, orgs, attendanceToday] = await Promise.all([
     db.workers.findMany({
-      where: projectId ? { project_id: projectId } : { project: { tenant_id: tenantId } },
+      where: projectId ? { project_id: projectId } : { projects: { tenant_id: tenantId } },
       orderBy: { worker_number: 'asc' },
       include: { organizations: { select: { short_name: true, legal_name: true } } },
     }),
     db.organizations.findMany({ where: { tenant_id: tenantId }, select: { id: true, legal_name: true, short_name: true }, orderBy: { legal_name: 'asc' } }),
-    db.attendance_records.count({ where: projectId ? { project_id: projectId } : { project: { tenant_id: tenantId } } }),
+    db.attendance_records.count({ where: projectId ? { project_id: projectId } : { projects: { tenant_id: tenantId } } }),
   ]);
 
   const nextNumber = workers.length + 1;

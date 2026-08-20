@@ -28,8 +28,8 @@ type PermissionDb = {
   tenant_member_roles: {
     findMany: (args: {
       where: { user_id: string };
-      select: { role_id: true; role: { select: { role_key: true } } };
-    }) => Promise<Array<{ role_id: string; role: { role_key: string } }>>;
+      select: { role_id: true; roles: { select: { role_key: true } } };
+    }) => Promise<Array<{ role_id: string; roles: { role_key: string } }>>;
   };
   role_permissions: {
     findMany: (args: {
@@ -50,7 +50,7 @@ type PermissionDb = {
     findMany: (args: {
       where: { project_member_id: string };
       select: {
-        role: {
+        roles: {
           select: {
             role_key: true;
             role_permissions: { select: { permission_key: true } };
@@ -58,7 +58,7 @@ type PermissionDb = {
         };
       };
     }) => Promise<
-      Array<{ role: { role_key: string; role_permissions: Array<{ permission_key: string }> } }>
+      Array<{ roles: { role_key: string; role_permissions: Array<{ permission_key: string }> } }>
     >;
   };
 };
@@ -79,9 +79,9 @@ export async function resolveEffectivePermissions(
 ): Promise<{ roles: string[]; permissions: string[] }> {
   const tenantRoles = await dbClient.tenant_member_roles.findMany({
     where: { user_id: userId },
-    select: { role_id: true, role: { select: { role_key: true } } },
+    select: { role_id: true, roles: { select: { role_key: true } } },
   });
-  const tenantRoleKeys = tenantRoles.map((r) => r.role.role_key);
+  const tenantRoleKeys = tenantRoles.map((r) => r.roles.role_key);
 
   if (SUPER_ROLE_KEYS.some((k) => tenantRoleKeys.includes(k))) {
     const all = await dbClient.permissions.findMany({ select: { permission_key: true } });
@@ -98,15 +98,15 @@ export async function resolveEffectivePermissions(
     const assignments = await dbClient.project_member_roles.findMany({
       where: { project_member_id: member.id },
       select: {
-        role: {
+        roles: {
           select: { role_key: true, role_permissions: { select: { permission_key: true } } },
         },
       },
     });
 
-    const roles = assignments.map((a) => a.role.role_key);
+    const roles = assignments.map((a) => a.roles.role_key);
     const permissions = Array.from(
-      new Set(assignments.flatMap((a) => a.role.role_permissions.map((p) => p.permission_key)))
+      new Set(assignments.flatMap((a) => a.roles.role_permissions.map((p) => p.permission_key)))
     );
     return { roles, permissions };
   }
@@ -126,11 +126,20 @@ export function hasAnyPermission(roles: string[], permissions: string[], key: st
 
 export async function getAppUser(opts: { projectId?: string | null } = {}): Promise<AppUserCtx | null> {
   const session = await getSession();
-  if (!session?.user) return null;
-
-  let appUser = await db.app_users.findUnique({
+  if (!session?.user) return null;  let appUser = await db.app_users.findUnique({
     where: { auth_subject: session.user.id },
   });
+
+  // Fallback: find by email (handles pre-seeded app_users with email-based auth_subject)
+  if (!appUser) {
+    appUser = await db.app_users.findFirst({ where: { email: session.user.email } });
+    if (appUser && appUser.auth_subject !== session.user.id) {
+      appUser = await db.app_users.update({
+        where: { id: appUser.id },
+        data: { auth_subject: session.user.id },
+      });
+    }
+  }
 
   if (!appUser) {
     const firstTenant = await db.tenants.findFirst({ orderBy: { created_at: 'asc' } });

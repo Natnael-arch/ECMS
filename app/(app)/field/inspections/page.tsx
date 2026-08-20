@@ -17,7 +17,7 @@ export default async function InspectionsPage() {
   const { tenantId, projectId } = await getProjectContext();
 
   const inspections = await db.inspection_requests.findMany({
-    where: projectId ? { project_id: projectId } : { project: { tenant_id: tenantId } },
+    where: projectId ? { project_id: projectId } : { projects: { tenant_id: tenantId } },
     orderBy: { requested_for: 'desc' },
     include: {
       contracts: { select: { contract_number: true } },

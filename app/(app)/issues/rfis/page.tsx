@@ -17,7 +17,7 @@ export default async function RfisPage() {
   const { tenantId, projectId } = await getProjectContext();
 
   const rfis = await db.rfis.findMany({
-    where: projectId ? { project_id: projectId } : { project: { tenant_id: tenantId } },
+    where: projectId ? { project_id: projectId } : { projects: { tenant_id: tenantId } },
     orderBy: { created_at: 'desc' },
     include: {
       contracts: { select: { contract_number: true } },

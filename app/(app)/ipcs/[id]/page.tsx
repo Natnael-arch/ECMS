@@ -111,7 +111,7 @@ export default async function IpcDetailPage({ params }: { params: Promise<{ id: 
               ['Paid', ipc.paid_at, null],
             ].map(([label, when, who]) => (
               <li key={String(label)} className="flex items-center justify-between gap-2">
-                <span className="text-ecms-muted">{label}</span>
+                <span className="text-ecms-muted">{String(label)}</span>
                 <span className="font-medium">{when ? date(when as Date) : '—'}</span>
               </li>
             ))}

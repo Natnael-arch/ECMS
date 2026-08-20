@@ -16,7 +16,7 @@ export default async function PurchaseOrdersPage() {
   const { tenantId, projectId } = await getProjectContext();
 
   const orders = await db.purchase_orders.findMany({
-    where: projectId ? { project_id: projectId } : { project: { tenant_id: tenantId } },
+    where: projectId ? { project_id: projectId } : { projects: { tenant_id: tenantId } },
     orderBy: { created_at: 'desc' },
     include: {
       suppliers: { include: { organizations: { select: { legal_name: true } } } },

@@ -18,7 +18,7 @@ export async function enqueueEvent(input: OutboxInput) {
       aggregate_type: input.aggregateType,
       aggregate_id: input.aggregateId,
       event_type: input.eventType,
-      payload: input.payload,
+      payload: input.payload as any,
       available_at: input.availableAt ?? new Date(),
     },
   });

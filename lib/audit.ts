@@ -21,9 +21,9 @@ export async function writeAudit(input: AuditInput) {
       action: input.action,
       entity_type: input.entityType,
       entity_id: input.entityId ?? null,
-      before_data: input.before ?? undefined,
-      after_data: input.after ?? undefined,
-      metadata: input.metadata ?? {},
+      before_data: (input.before as any) ?? undefined,
+      after_data: (input.after as any) ?? undefined,
+      metadata: (input.metadata ?? {}) as any,
     },
   });
 }
