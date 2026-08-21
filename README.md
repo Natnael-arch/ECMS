@@ -44,6 +44,7 @@ This executes `psql` against the `ecms` database, applying:
 1. `0001_ecms_mvp_schema.sql` — core application tables
 2. `0002_better_auth.sql` — Better Auth tables
 3. `0003_ecms_ipc_paid_by.sql` — IPC paid_by column
+4. `0004_triggers_rls_seeds.sql` — Database triggers and RLS policies
 
 `prisma/schema.prisma` is kept in sync with these SQL files **manually** (not via `prisma migrate`). When you change the schema, update both the Prisma file and the corresponding SQL migration.
 
