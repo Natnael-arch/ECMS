@@ -51,7 +51,7 @@ export async function run(
     return { restricted: true, reason: 'Project not found' };
   }
 
-  const activeContract = project.contracts[0] || null;
+  const activeContract = project.contracts?.[0] || null;
 
   // Chainage format
   let scopeChainage = project.description || 'N/A';
@@ -97,7 +97,7 @@ export async function run(
 
   // Physical progress %
   let physicalProgressPercent = 0;
-  const latestCertifiedIpc = project.ipc_certificates[0];
+  const latestCertifiedIpc = project.ipc_certificates?.[0];
   if (latestCertifiedIpc && contractValue > 0) {
     const cumulativeCertifiedWork = Number(latestCertifiedIpc.cumulative_work_amount || 0);
     physicalProgressPercent = round2(Math.min(100, (cumulativeCertifiedWork / contractValue) * 100));
