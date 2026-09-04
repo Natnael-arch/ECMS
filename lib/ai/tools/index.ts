@@ -14,6 +14,15 @@ export {
   recentActivity,
 };
 
+export const TOOL_FRIENDLY_NAMES: Record<string, string> = {
+  get_project_summary: 'Project summary',
+  get_boq_status: 'BOQ status',
+  get_ipc_status: 'IPC status',
+  get_procurement_status: 'Procurement status',
+  get_workforce_status: 'Workforce status',
+  get_recent_activity: 'Recent activity',
+};
+
 export const tools = [
   projectSummary,
   boqStatus,

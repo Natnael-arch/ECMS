@@ -4,7 +4,7 @@ import { db } from '@/lib/db';
 import { writeAudit } from '@/lib/audit';
 import { deepseek, DEEPSEEK_MODEL } from '@/lib/ai/deepseek-client';
 import { buildSystemPrompt } from '@/lib/ai/system-prompt';
-import { tools as registeredTools } from '@/lib/ai/tools';
+import { tools as registeredTools, TOOL_FRIENDLY_NAMES } from '@/lib/ai/tools';
 
 export const dynamic = 'force-dynamic';
 
@@ -102,7 +102,7 @@ export async function processChatRequest(
             if (delta.content) {
               roundContent += delta.content;
 
-              // Forward content delta to client ONLY if no tool calls are being accumulated in this round
+              // Stream NDJSON content event to client ONLY if no tool calls are being accumulated in this round
               if (toolCallsAcc.length === 0) {
                 if (!auditWritten) {
                   auditWritten = true;
@@ -120,7 +120,9 @@ export async function processChatRequest(
                   });
                 }
 
-                controller.enqueue(encoder.encode(delta.content));
+                controller.enqueue(
+                  encoder.encode(JSON.stringify({ type: 'content', delta: delta.content }) + '\n')
+                );
               }
             }
           }
@@ -139,6 +141,17 @@ export async function processChatRequest(
 
             for (const tc of toolCallsAcc) {
               toolsCalled.push(tc.name);
+
+              // Emit NDJSON tool_call event to client before executing tool
+              controller.enqueue(
+                encoder.encode(
+                  JSON.stringify({
+                    type: 'tool_call',
+                    name: tc.name,
+                    label: TOOL_FRIENDLY_NAMES[tc.name] || tc.name,
+                  }) + '\n'
+                )
+              );
 
               let parsedArgs: any = {};
               try {
@@ -183,24 +196,38 @@ export async function processChatRequest(
             });
           }
 
+          controller.enqueue(encoder.encode(JSON.stringify({ type: 'done' }) + '\n'));
           controller.close();
           return;
         }
 
         // Max rounds exceeded
         controller.enqueue(
-          encoder.encode('\n\n[Error: AI chat loop exceeded maximum tool execution rounds.]')
+          encoder.encode(
+            JSON.stringify({
+              type: 'error',
+              message: 'AI chat loop exceeded maximum tool execution rounds.',
+            }) + '\n'
+          )
         );
         controller.close();
       } catch (err: any) {
-        controller.error(err);
+        controller.enqueue(
+          encoder.encode(
+            JSON.stringify({
+              type: 'error',
+              message: err?.message || 'Internal Server Error during chat processing',
+            }) + '\n'
+          )
+        );
+        controller.close();
       }
     },
   });
 
   return new Response(stream, {
     headers: {
-      'Content-Type': 'text/plain; charset=utf-8',
+      'Content-Type': 'application/x-ndjson; charset=utf-8',
       'Cache-Control': 'no-cache',
       'Connection': 'keep-alive',
     },

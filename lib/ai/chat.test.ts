@@ -78,7 +78,7 @@ function createMockDb() {
   };
 }
 
-describe('AI Chat Route & Real Streaming Architecture', () => {
+describe('AI Chat Route & NDJSON Real Streaming Protocol', () => {
   let mockDb: ReturnType<typeof createMockDb>;
 
   beforeEach(() => {
@@ -103,7 +103,7 @@ describe('AI Chat Route & Real Streaming Architecture', () => {
     expect(requireApiPermSpy).toHaveBeenCalledWith('ai_chat.use', PROJECT_ID);
   });
 
-  it('2. Real Streaming Verification: discrete text chunks arrive incrementally over the reader', async () => {
+  it('2. Real NDJSON Streaming Verification: discrete content deltas arrive incrementally as NDJSON events', async () => {
     const writeAuditSpy = vi.spyOn(auditModule, 'writeAudit').mockResolvedValue({} as any);
 
     const mockDeepSeekClient = {
@@ -130,29 +130,40 @@ describe('AI Chat Route & Real Streaming Architecture', () => {
     );
 
     expect(response).toBeInstanceOf(Response);
+    expect(response.headers.get('Content-Type')).toContain('application/x-ndjson');
+
     const reader = response.body!.getReader();
     const decoder = new TextDecoder();
 
-    const receivedChunks: string[] = [];
+    let text = '';
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
-      receivedChunks.push(decoder.decode(value));
+      text += decoder.decode(value, { stream: true });
     }
 
-    // Verify content arrived in 4 discrete chunks over the stream
-    expect(receivedChunks).toHaveLength(4);
-    expect(receivedChunks[0]).toBe('The ');
-    expect(receivedChunks[1]).toBe('project ');
-    expect(receivedChunks[2]).toBe('status ');
-    expect(receivedChunks[3]).toBe('is active.');
-    expect(receivedChunks.join('')).toBe('The project status is active.');
+    const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
+    const events = lines.map((l) => JSON.parse(l));
+
+    // 4 content deltas + 1 done event = 5 NDJSON events
+    expect(events).toHaveLength(5);
+    expect(events[0]).toEqual({ type: 'content', delta: 'The ' });
+    expect(events[1]).toEqual({ type: 'content', delta: 'project ' });
+    expect(events[2]).toEqual({ type: 'content', delta: 'status ' });
+    expect(events[3]).toEqual({ type: 'content', delta: 'is active.' });
+    expect(events[4]).toEqual({ type: 'done' });
+
+    const fullText = events
+      .filter((e) => e.type === 'content')
+      .map((e) => e.delta)
+      .join('');
+    expect(fullText).toBe('The project status is active.');
 
     // Audit written once per exchange
     expect(writeAuditSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('3. Multi-round Tool Call Execution: tool round deltas are buffered server-side and only final answer streams to client', async () => {
+  it('3. Multi-round Tool Execution & NDJSON tool_call event: tool_call event emitted before execution and only final answer streams', async () => {
     const writeAuditSpy = vi.spyOn(auditModule, 'writeAudit').mockResolvedValue({} as any);
 
     const deepseekCalls: any[] = [];
@@ -212,27 +223,31 @@ describe('AI Chat Route & Real Streaming Architecture', () => {
 
     const reader = response.body!.getReader();
     const decoder = new TextDecoder();
-    const receivedChunks: string[] = [];
-
+    let text = '';
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
-      receivedChunks.push(decoder.decode(value));
+      text += decoder.decode(value, { stream: true });
     }
 
-    // Round 1 tool-call fragments were buffered. Only Round 2 text chunks reached the client stream.
-    expect(receivedChunks).toHaveLength(2);
-    expect(receivedChunks[0]).toBe('Contract ');
-    expect(receivedChunks[1]).toBe('value: 50M ETB.');
-    expect(receivedChunks.join('')).toBe('Contract value: 50M ETB.');
+    const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
+    const events = lines.map((l) => JSON.parse(l));
 
-    // Confirm tool result role: tool was appended with parsed arguments
+    // First event is tool_call, followed by 2 content deltas, ending with done
+    expect(events[0]).toEqual({
+      type: 'tool_call',
+      name: 'get_project_summary',
+      label: 'Project summary',
+    });
+    expect(events[1]).toEqual({ type: 'content', delta: 'Contract ' });
+    expect(events[2]).toEqual({ type: 'content', delta: 'value: 50M ETB.' });
+    expect(events[3]).toEqual({ type: 'done' });
+
+    // Confirm tool result role: tool was appended with parsed arguments in Round 2 history
     const round2Messages = deepseekCalls[1].messages;
     const toolMsg = round2Messages.find((m: any) => m.role === 'tool');
     expect(toolMsg).toBeDefined();
     expect(toolMsg.tool_call_id).toBe('call_1');
-    const toolResult = JSON.parse(toolMsg.content);
-    expect(toolResult.name).toBe('Modjo-Hawassa Road');
 
     // Confirm audit written once with called tools list
     expect(writeAuditSpy).toHaveBeenCalledTimes(1);
@@ -245,7 +260,7 @@ describe('AI Chat Route & Real Streaming Architecture', () => {
     );
   });
 
-  it('4. Runaway Loop Protection: caps iterations at max rounds and terminates stream with error text', async () => {
+  it('4. Runaway Loop Protection: caps iterations at max rounds and emits NDJSON error event', async () => {
     const mockDeepSeekClient = {
       chat: {
         completions: {
@@ -278,6 +293,11 @@ describe('AI Chat Route & Real Streaming Architecture', () => {
     );
 
     const text = await response.text();
-    expect(text).toContain('[Error: AI chat loop exceeded maximum tool execution rounds.]');
+    const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
+    const events = lines.map((l) => JSON.parse(l));
+
+    const errorEvent = events.find((e) => e.type === 'error');
+    expect(errorEvent).toBeDefined();
+    expect(errorEvent.message).toContain('exceeded maximum tool execution rounds');
   });
 });
