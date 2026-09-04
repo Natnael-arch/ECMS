@@ -28,11 +28,33 @@ export async function run(
     return permCheck;
   }
 
-  // Find active/latest BOQ version for project
-  const boqVersion = await dbClient.boq_versions.findFirst({
+  // Find active/approved BOQ version for project via its contract
+  const contract = await dbClient.contracts.findFirst({
     where: { project_id: targetProjectId },
+    orderBy: { created_at: 'desc' },
+  });
+
+  if (!contract) {
+    return {
+      projectId: targetProjectId,
+      boqVersionId: null,
+      items: [],
+      over90PercentCount: 0,
+      overrunCount: 0,
+    };
+  }
+
+  let boqVersion = await dbClient.boq_versions.findFirst({
+    where: { contract_id: contract.id, status: 'approved' },
     orderBy: { version_number: 'desc' },
   });
+
+  if (!boqVersion) {
+    boqVersion = await dbClient.boq_versions.findFirst({
+      where: { contract_id: contract.id },
+      orderBy: { version_number: 'desc' },
+    });
+  }
 
   if (!boqVersion) {
     return {

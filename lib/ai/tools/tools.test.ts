@@ -101,11 +101,21 @@ function createMockDb() {
         ],
       }),
     },
+    contracts: {
+      findFirst: async ({ where }: any) => {
+        if (where?.project_id === PROJECT_ID) {
+          return { id: 'contract-1', project_id: PROJECT_ID };
+        }
+        return null;
+      },
+    },
     boq_versions: {
-      findFirst: async () => ({
-        id: 'boq-v1',
-        version_number: 1,
-      }),
+      findFirst: async ({ where }: any) => {
+        if (where?.contract_id === 'contract-1') {
+          return { id: 'boq-v1', contract_id: 'contract-1', version_number: 1, status: 'approved' };
+        }
+        return null;
+      },
     },
     boq_items: {
       findMany: async () => [
@@ -325,6 +335,52 @@ describe('AI Data Tools — Permission Gating & Direct Execution', () => {
     it('returns restricted result for unauthorized user', async () => {
       const res = await boqStatus.run(PROJECT_ID, FOREMAN_USER_ID, {}, mockDb);
       expect(res).toHaveProperty('restricted', true);
+    });
+
+    it('correctly queries contracts then boq_versions by contract_id and approved status', async () => {
+      const queriedCalls: string[] = [];
+      const customDb = {
+        ...mockDb,
+        contracts: {
+          findFirst: async ({ where }: any) => {
+            queriedCalls.push(`contracts.findFirst: ${where.project_id}`);
+            return { id: 'contract-custom-123', project_id: where.project_id };
+          },
+        },
+        boq_versions: {
+          findFirst: async ({ where }: any) => {
+            queriedCalls.push(`boq_versions.findFirst: contract_id=${where.contract_id}, status=${where.status}`);
+            if (where.contract_id === 'contract-custom-123' && where.status === 'approved') {
+              return { id: 'boq-approved-1', contract_id: 'contract-custom-123', version_number: 1, status: 'approved' };
+            }
+            return null;
+          },
+        },
+      };
+
+      const res = await boqStatus.run(PROJECT_ID, PM_USER_ID, {}, customDb);
+      expect(res).not.toHaveProperty('restricted');
+      expect(res.boqVersionId).toBe('boq-approved-1');
+      expect(queriedCalls).toContain(`contracts.findFirst: ${PROJECT_ID}`);
+      expect(queriedCalls).toContain(`boq_versions.findFirst: contract_id=contract-custom-123, status=approved`);
+    });
+
+    it('returns empty result shape when project has no contract', async () => {
+      const customDb = {
+        ...mockDb,
+        contracts: {
+          findFirst: async () => null,
+        },
+      };
+
+      const res = await boqStatus.run(PROJECT_ID, PM_USER_ID, {}, customDb);
+      expect(res).toEqual({
+        projectId: PROJECT_ID,
+        boqVersionId: null,
+        items: [],
+        over90PercentCount: 0,
+        overrunCount: 0,
+      });
     });
   });
 
