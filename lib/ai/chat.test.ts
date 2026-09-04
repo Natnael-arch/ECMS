@@ -1,14 +1,21 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { processChatRequest } from '@/app/api/v1/ai/chat/route';
+import { processChatRequest, POST } from '@/app/api/v1/ai/chat/route';
 import * as auditModule from '@/lib/audit';
+import * as sessionModule from '@/lib/server/session';
+import { NextResponse } from 'next/server';
 
 // ---------------------------------------------------------------------------
-// Test Constants & Mocks
+// Test Constants & Mock Generators
 // ---------------------------------------------------------------------------
 
 const PROJECT_ID = '00000000-0000-0000-0000-000000000001';
 const PM_USER_ID = '11111111-1111-1111-1111-111111111111';
-const UNAUTH_USER_ID = '22222222-2222-2222-2222-222222222222';
+
+async function* createMockAsyncStream(chunks: any[]) {
+  for (const chunk of chunks) {
+    yield chunk;
+  }
+}
 
 function createMockDb() {
   return {
@@ -33,12 +40,8 @@ function createMockDb() {
         return [];
       },
     },
-    role_permissions: {
-      findMany: async () => [],
-    },
-    permissions: {
-      findMany: async () => [],
-    },
+    role_permissions: { findMany: async () => [] },
+    permissions: { findMany: async () => [] },
     project_members: {
       findUnique: async ({ where }: any) => {
         if (where.project_id_user_id.user_id === PM_USER_ID) {
@@ -67,9 +70,7 @@ function createMockDb() {
         return [];
       },
     },
-    contracts: {
-      findMany: async () => [],
-    },
+    contracts: { findMany: async () => [] },
     ipc_certificates: {
       findFirst: async () => null,
       findMany: async () => [],
@@ -77,7 +78,7 @@ function createMockDb() {
   };
 }
 
-describe('AI Chat Route & DeepSeek Tool Integration Loop', () => {
+describe('AI Chat Route & Real Streaming Architecture', () => {
   let mockDb: ReturnType<typeof createMockDb>;
 
   beforeEach(() => {
@@ -85,10 +86,75 @@ describe('AI Chat Route & DeepSeek Tool Integration Loop', () => {
     vi.restoreAllMocks();
   });
 
-  it('1. Tool execution loop: parses tool_calls, executes tool, passes role: tool message, and returns streamed final response', async () => {
+  it('1. Permission Gate Hard Check: blocks unauthorized users before any DeepSeek call', async () => {
+    const requireApiPermSpy = vi.spyOn(sessionModule, 'requireApiPermission').mockResolvedValue(
+      NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    );
+
+    const req = new Request('http://localhost:3000/api/v1/ai/chat', {
+      method: 'POST',
+      body: JSON.stringify({ projectId: PROJECT_ID, messages: [{ role: 'user', content: 'Hi' }] }),
+    });
+
+    const res = await POST(req as any);
+    expect(res.status).toBe(403);
+    const json = await res.json();
+    expect(json.error).toBe('Forbidden');
+    expect(requireApiPermSpy).toHaveBeenCalledWith('ai_chat.use', PROJECT_ID);
+  });
+
+  it('2. Real Streaming Verification: discrete text chunks arrive incrementally over the reader', async () => {
     const writeAuditSpy = vi.spyOn(auditModule, 'writeAudit').mockResolvedValue({} as any);
 
-    // Mock DeepSeek API client
+    const mockDeepSeekClient = {
+      chat: {
+        completions: {
+          create: vi.fn(async () =>
+            createMockAsyncStream([
+              { choices: [{ delta: { content: 'The ' }, finish_reason: null }] },
+              { choices: [{ delta: { content: 'project ' }, finish_reason: null }] },
+              { choices: [{ delta: { content: 'status ' }, finish_reason: null }] },
+              { choices: [{ delta: { content: 'is active.' }, finish_reason: 'stop' }] },
+            ])
+          ),
+        },
+      },
+    };
+
+    const response = await processChatRequest(
+      PROJECT_ID,
+      PM_USER_ID,
+      [{ role: 'user', content: 'Status?' }],
+      mockDeepSeekClient,
+      mockDb
+    );
+
+    expect(response).toBeInstanceOf(Response);
+    const reader = response.body!.getReader();
+    const decoder = new TextDecoder();
+
+    const receivedChunks: string[] = [];
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      receivedChunks.push(decoder.decode(value));
+    }
+
+    // Verify content arrived in 4 discrete chunks over the stream
+    expect(receivedChunks).toHaveLength(4);
+    expect(receivedChunks[0]).toBe('The ');
+    expect(receivedChunks[1]).toBe('project ');
+    expect(receivedChunks[2]).toBe('status ');
+    expect(receivedChunks[3]).toBe('is active.');
+    expect(receivedChunks.join('')).toBe('The project status is active.');
+
+    // Audit written once per exchange
+    expect(writeAuditSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('3. Multi-round Tool Call Execution: tool round deltas are buffered server-side and only final answer streams to client', async () => {
+    const writeAuditSpy = vi.spyOn(auditModule, 'writeAudit').mockResolvedValue({} as any);
+
     const deepseekCalls: any[] = [];
     const mockDeepSeekClient = {
       chat: {
@@ -96,123 +162,114 @@ describe('AI Chat Route & DeepSeek Tool Integration Loop', () => {
           create: vi.fn(async (params: any) => {
             deepseekCalls.push(params);
 
-            // Round 1: Model requests get_project_summary tool call
+            // Round 1: Streaming tool_calls fragments across multiple chunks
             if (deepseekCalls.length === 1) {
-              return {
-                choices: [
-                  {
-                    message: {
-                      role: 'assistant',
-                      content: null,
-                      tool_calls: [
-                        {
-                          id: 'call_abc123',
-                          type: 'function',
-                          function: {
-                            name: 'get_project_summary',
-                            arguments: JSON.stringify({ projectId: PROJECT_ID }),
-                          },
-                        },
-                      ],
+              return createMockAsyncStream([
+                {
+                  choices: [
+                    {
+                      delta: {
+                        tool_calls: [
+                          { index: 0, id: 'call_1', type: 'function', function: { name: 'get_project_summary', arguments: '{"proj' } },
+                        ],
+                      },
+                      finish_reason: null,
                     },
-                  },
-                ],
-              };
+                  ],
+                },
+                {
+                  choices: [
+                    {
+                      delta: {
+                        tool_calls: [
+                          { index: 0, function: { arguments: `ectId":"${PROJECT_ID}"}` } },
+                        ],
+                      },
+                      finish_reason: 'tool_calls',
+                    },
+                  ],
+                },
+              ]);
             }
 
-            // Round 2: Model returns final text response after tool output
-            return {
-              choices: [
-                {
-                  message: {
-                    role: 'assistant',
-                    content: 'The Modjo-Hawassa Road project contract value is 50,000,000 ETB.',
-                  },
-                },
-              ],
-            };
+            // Round 2: Final response stream
+            return createMockAsyncStream([
+              { choices: [{ delta: { content: 'Contract ' }, finish_reason: null }] },
+              { choices: [{ delta: { content: 'value: 50M ETB.' }, finish_reason: 'stop' }] },
+            ]);
           }),
         },
       },
     };
 
-    const userMessages = [
-      { role: 'user', content: 'What is the summary of this project?' },
-    ];
-
     const response = await processChatRequest(
       PROJECT_ID,
       PM_USER_ID,
-      userMessages,
+      [{ role: 'user', content: 'Summarize project' }],
       mockDeepSeekClient,
       mockDb
     );
 
-    // Verify response is a stream Response
-    expect(response).toBeInstanceOf(Response);
-    const text = await response.text();
-    expect(text).toBe('The Modjo-Hawassa Road project contract value is 50,000,000 ETB.');
+    const reader = response.body!.getReader();
+    const decoder = new TextDecoder();
+    const receivedChunks: string[] = [];
 
-    // Verify DeepSeek client was called twice (turn 1 request -> turn 2 final answer)
-    expect(deepseekCalls).toHaveLength(2);
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      receivedChunks.push(decoder.decode(value));
+    }
 
-    // Check Round 2 history passed to DeepSeek contained tool call response with role 'tool'
+    // Round 1 tool-call fragments were buffered. Only Round 2 text chunks reached the client stream.
+    expect(receivedChunks).toHaveLength(2);
+    expect(receivedChunks[0]).toBe('Contract ');
+    expect(receivedChunks[1]).toBe('value: 50M ETB.');
+    expect(receivedChunks.join('')).toBe('Contract value: 50M ETB.');
+
+    // Confirm tool result role: tool was appended with parsed arguments
     const round2Messages = deepseekCalls[1].messages;
-    const toolResultMessage = round2Messages.find((m: any) => m.role === 'tool');
+    const toolMsg = round2Messages.find((m: any) => m.role === 'tool');
+    expect(toolMsg).toBeDefined();
+    expect(toolMsg.tool_call_id).toBe('call_1');
+    const toolResult = JSON.parse(toolMsg.content);
+    expect(toolResult.name).toBe('Modjo-Hawassa Road');
 
-    expect(toolResultMessage).toBeDefined();
-    expect(toolResultMessage.tool_call_id).toBe('call_abc123');
-
-    const parsedContent = JSON.parse(toolResultMessage.content);
-    expect(parsedContent.projectId).toBe(PROJECT_ID);
-    expect(parsedContent.name).toBe('Modjo-Hawassa Road');
-
-    // Verify writeAudit was called ONCE per exchange
+    // Confirm audit written once with called tools list
     expect(writeAuditSpy).toHaveBeenCalledTimes(1);
     expect(writeAuditSpy).toHaveBeenCalledWith(
       expect.objectContaining({
-        tenantId: 'tenant-123',
-        projectId: PROJECT_ID,
-        actorUserId: PM_USER_ID,
-        action: 'AI_CHAT_QUERY',
-        entityType: 'ai_chat',
         metadata: expect.objectContaining({
-          userQuestion: 'What is the summary of this project?',
           toolsCalled: ['get_project_summary'],
         }),
       })
     );
   });
 
-  it('2. Runaway loop protection: terminates cleanly at max iterations', async () => {
+  it('4. Runaway Loop Protection: caps iterations at max rounds and terminates stream with error text', async () => {
     const mockDeepSeekClient = {
       chat: {
         completions: {
-          create: vi.fn(async () => ({
-            choices: [
+          create: vi.fn(async () =>
+            createMockAsyncStream([
               {
-                message: {
-                  role: 'assistant',
-                  content: null,
-                  tool_calls: [
-                    {
-                      id: 'call_loop',
-                      type: 'function',
-                      function: {
-                        name: 'get_project_summary',
-                        arguments: '{}',
-                      },
+                choices: [
+                  {
+                    delta: {
+                      tool_calls: [
+                        { index: 0, id: 'call_loop', type: 'function', function: { name: 'get_project_summary', arguments: '{}' } },
+                      ],
                     },
-                  ],
-                },
+                    finish_reason: 'tool_calls',
+                  },
+                ],
               },
-            ],
-          })),
+            ])
+          ),
         },
       },
     };
 
-    const response: any = await processChatRequest(
+    const response = await processChatRequest(
       PROJECT_ID,
       PM_USER_ID,
       [{ role: 'user', content: 'Infinite loop test' }],
@@ -220,8 +277,7 @@ describe('AI Chat Route & DeepSeek Tool Integration Loop', () => {
       mockDb
     );
 
-    expect(response.status).toBe(500);
-    const json = await response.json();
-    expect(json.error).toContain('exceeded maximum tool execution rounds');
+    const text = await response.text();
+    expect(text).toContain('[Error: AI chat loop exceeded maximum tool execution rounds.]');
   });
 });

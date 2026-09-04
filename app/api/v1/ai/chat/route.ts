@@ -47,93 +47,164 @@ export async function processChatRequest(
   const MAX_ROUNDS = 6;
   let round = 0;
   const toolsCalled: string[] = [];
+  let auditWritten = false;
 
-  while (round < MAX_ROUNDS) {
-    round++;
+  const encoder = new TextEncoder();
 
-    const response = await client.chat.completions.create({
-      model: DEEPSEEK_MODEL,
-      messages: conversationHistory,
-      tools: formattedTools,
-      tool_choice: 'auto',
-    });
+  const stream = new ReadableStream({
+    async start(controller) {
+      try {
+        while (round < MAX_ROUNDS) {
+          round++;
 
-    const choice = response.choices[0];
-    const message = choice.message;
+          const responseStream = await client.chat.completions.create({
+            model: DEEPSEEK_MODEL,
+            messages: conversationHistory,
+            tools: formattedTools,
+            tool_choice: 'auto',
+            stream: true,
+          });
 
-    if (message.tool_calls && message.tool_calls.length > 0) {
-      // Append assistant tool_calls message
-      conversationHistory.push({
-        role: 'assistant',
-        content: message.content || null,
-        tool_calls: message.tool_calls,
-      });
+          const toolCallsAcc: Array<{ id: string; name: string; arguments: string }> = [];
+          let roundContent = '';
+          let finishReason: string | null = null;
 
-      for (const toolCall of message.tool_calls) {
-        const functionName = toolCall.function.name;
-        toolsCalled.push(functionName);
+          for await (const chunk of responseStream) {
+            const choice = chunk.choices?.[0];
+            if (!choice) continue;
 
-        let parsedArgs: any = {};
-        try {
-          parsedArgs = JSON.parse(toolCall.function.arguments || '{}');
-        } catch {
-          parsedArgs = {};
-        }
+            if (choice.finish_reason) {
+              finishReason = choice.finish_reason;
+            }
 
-        const targetTool = toolMap.get(functionName);
-        let result: any;
-        if (targetTool) {
-          result = await targetTool.run(projectId, userId, parsedArgs, dbClient);
-        } else {
-          result = { restricted: true, reason: `Tool '${functionName}' is not recognized.` };
-        }
+            const delta = choice.delta;
+            if (!delta) continue;
 
-        conversationHistory.push({
-          role: 'tool',
-          tool_call_id: toolCall.id,
-          content: JSON.stringify(result),
-        });
-      }
-      // Continue loop for next turn with tool responses included
-    } else {
-      // Final response text
-      const finalText = message.content || '';
-      const userPrompt = messages.findLast((m) => m.role === 'user')?.content || 'AI Chat Query';
+            // Accumulate tool_calls deltas by index
+            if (delta.tool_calls) {
+              for (const tcDelta of delta.tool_calls) {
+                const idx = tcDelta.index;
+                if (toolCallsAcc[idx] === undefined) {
+                  toolCallsAcc[idx] = {
+                    id: tcDelta.id || '',
+                    name: tcDelta.function?.name || '',
+                    arguments: tcDelta.function?.arguments || '',
+                  };
+                } else {
+                  if (tcDelta.id) toolCallsAcc[idx].id = tcDelta.id;
+                  if (tcDelta.function?.name) toolCallsAcc[idx].name += tcDelta.function.name;
+                  if (tcDelta.function?.arguments) toolCallsAcc[idx].arguments += tcDelta.function.arguments;
+                }
+              }
+            }
 
-      await writeAudit({
-        tenantId,
-        projectId,
-        actorUserId: userId,
-        action: 'AI_CHAT_QUERY',
-        entityType: 'ai_chat',
-        metadata: {
-          userQuestion: typeof userPrompt === 'string' ? userPrompt.slice(0, 200) : 'Query',
-          toolsCalled: Array.from(new Set(toolsCalled)),
-        },
-      });
+            // Text content delta
+            if (delta.content) {
+              roundContent += delta.content;
 
-      // Stream text response to client using ReadableStream
-      const encoder = new TextEncoder();
-      const stream = new ReadableStream({
-        start(controller) {
-          controller.enqueue(encoder.encode(finalText));
+              // Forward content delta to client ONLY if no tool calls are being accumulated in this round
+              if (toolCallsAcc.length === 0) {
+                if (!auditWritten) {
+                  auditWritten = true;
+                  const userPrompt = messages.findLast((m) => m.role === 'user')?.content || 'AI Chat Query';
+                  await writeAudit({
+                    tenantId,
+                    projectId,
+                    actorUserId: userId,
+                    action: 'AI_CHAT_QUERY',
+                    entityType: 'ai_chat',
+                    metadata: {
+                      userQuestion: typeof userPrompt === 'string' ? userPrompt.slice(0, 200) : 'Query',
+                      toolsCalled: Array.from(new Set(toolsCalled)),
+                    },
+                  });
+                }
+
+                controller.enqueue(encoder.encode(delta.content));
+              }
+            }
+          }
+
+          // Check if this round executed tool calls
+          if (toolCallsAcc.length > 0 || finishReason === 'tool_calls') {
+            conversationHistory.push({
+              role: 'assistant',
+              content: roundContent || null,
+              tool_calls: toolCallsAcc.map((tc) => ({
+                id: tc.id,
+                type: 'function',
+                function: { name: tc.name, arguments: tc.arguments },
+              })),
+            });
+
+            for (const tc of toolCallsAcc) {
+              toolsCalled.push(tc.name);
+
+              let parsedArgs: any = {};
+              try {
+                parsedArgs = JSON.parse(tc.arguments || '{}');
+              } catch {
+                parsedArgs = {};
+              }
+
+              const targetTool = toolMap.get(tc.name);
+              let result: any;
+              if (targetTool) {
+                result = await targetTool.run(projectId, userId, parsedArgs, dbClient);
+              } else {
+                result = { restricted: true, reason: `Tool '${tc.name}' is not recognized.` };
+              }
+
+              conversationHistory.push({
+                role: 'tool',
+                tool_call_id: tc.id,
+                content: JSON.stringify(result),
+              });
+            }
+
+            // Loop to next round
+            continue;
+          }
+
+          // Final response round finished
+          if (!auditWritten) {
+            auditWritten = true;
+            const userPrompt = messages.findLast((m) => m.role === 'user')?.content || 'AI Chat Query';
+            await writeAudit({
+              tenantId,
+              projectId,
+              actorUserId: userId,
+              action: 'AI_CHAT_QUERY',
+              entityType: 'ai_chat',
+              metadata: {
+                userQuestion: typeof userPrompt === 'string' ? userPrompt.slice(0, 200) : 'Query',
+                toolsCalled: Array.from(new Set(toolsCalled)),
+              },
+            });
+          }
+
           controller.close();
-        },
-      });
+          return;
+        }
 
-      return new Response(stream, {
-        headers: {
-          'Content-Type': 'text/plain; charset=utf-8',
-          'Cache-Control': 'no-cache',
-        },
-      });
-    }
-  }
+        // Max rounds exceeded
+        controller.enqueue(
+          encoder.encode('\n\n[Error: AI chat loop exceeded maximum tool execution rounds.]')
+        );
+        controller.close();
+      } catch (err: any) {
+        controller.error(err);
+      }
+    },
+  });
 
-  return NextResponse.json(
-    { error: 'AI chat loop exceeded maximum tool execution rounds.' },
-    { status: 500 }
-  );
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+    },
+  });
 }
 
 export async function POST(req: NextRequest) {
